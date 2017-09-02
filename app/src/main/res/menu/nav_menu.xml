@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item android:id="@+id/nav_my_city"
+            android:icon="@mipmap/ic_launcher"
+            android:title="我的城市"/>
+
+        <item android:id="@+id/nav_change_city"
+            android:icon="@mipmap/ic_launcher"
+            android:title="切换城市"/>
+
+        <item android:id="@+id/nav_help"
+            android:icon="@mipmap/ic_launcher"
+            android:title="帮助"/>
+
+        <item android:id="@+id/nav_about"
+            android:icon="@mipmap/ic_launcher"
+            android:title="关于软件"/>
+
+
+    </group>
+</menu>
