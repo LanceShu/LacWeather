@@ -13,34 +13,34 @@ object LogUtil {
     val WARN = 4
     val ERROR = 5
     val NOTHING = 6
-    var level = com.example.xiyou3g.lacweather.util.LogUtil.VERBOSE
+    var level = VERBOSE
 
     fun v(tag: String, msg: String) {
-        if (com.example.xiyou3g.lacweather.util.LogUtil.level <= com.example.xiyou3g.lacweather.util.LogUtil.VERBOSE) {
+        if (level <= VERBOSE) {
             android.util.Log.v(tag, msg)
         }
     }
 
     fun d(tag: String, msg: String) {
-        if (com.example.xiyou3g.lacweather.util.LogUtil.level <= com.example.xiyou3g.lacweather.util.LogUtil.DEBUG) {
+        if (level <= DEBUG) {
             android.util.Log.d(tag, msg)
         }
     }
 
     fun i(tag: String, msg: String) {
-        if (com.example.xiyou3g.lacweather.util.LogUtil.level <= com.example.xiyou3g.lacweather.util.LogUtil.INFO) {
+        if (level <= INFO) {
             android.util.Log.i(tag, msg)
         }
     }
 
     fun w(tag: String, msg: String) {
-        if (com.example.xiyou3g.lacweather.util.LogUtil.level <= com.example.xiyou3g.lacweather.util.LogUtil.WARN) {
+        if (level <= WARN) {
             android.util.Log.w(tag, msg)
         }
     }
 
     fun e(tag: String, msg: String) {
-        if (com.example.xiyou3g.lacweather.util.LogUtil.level <= com.example.xiyou3g.lacweather.util.LogUtil.ERROR) {
+        if (level <= ERROR) {
             android.util.Log.e(tag, msg)
         }
     }
