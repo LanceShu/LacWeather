@@ -12,17 +12,30 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.xiyou3g.lacweather.R;
+import com.example.xiyou3g.lacweather.db.CountyBean;
 import com.example.xiyou3g.lacweather.fragment.ChooseAreaFragment;
 import com.example.xiyou3g.lacweather.util.ResourceUitls;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Created by Lance
@@ -34,14 +47,25 @@ public class MainActivity extends AppCompatActivity {
     private LinearLayout forecastLayout;
     private Boolean isExit = false;
     private final static String TAG = "MainActivity";
+    public static StringBuffer allCountyWeatherIdAndName;
+    public static List<CountyBean> countyBeanList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        allCountyWeatherIdAndName = new StringBuffer();
+        countyBeanList = new ArrayList<>();
         initWight();
-        new GetCountyAsyncTask(this).execute(provinceAddress);
+        if (prefs.getString("getAllCounty", null) == null) {
+            new GetCountyAsyncTask(this, prefs)
+                    .execute(provinceAddress);
+        } else {
+            String allCountyMessage = prefs.getString("getAllCounty", null);
+            new GetCountyAsyncTask(this, null)
+                    .handleCountyMessage(allCountyMessage);
+        }
         if(prefs.getString("weather",null) != null){
             Intent intent = new Intent(this, WeatherActivity.class);
             startActivity(intent);
@@ -55,10 +79,13 @@ public class MainActivity extends AppCompatActivity {
 
     static class GetCountyAsyncTask extends AsyncTask<String, Integer, String> {
         private WeakReference<Context> c;
+        private WeakReference<SharedPreferences> spf;
         private ProgressDialog dialog;
+        private final int TOTAL_LENGTH = 38604;
 
-        GetCountyAsyncTask(Context context) {
+        GetCountyAsyncTask(Context context, SharedPreferences sharedPreferences) {
             c = new WeakReference<>(context);
+            spf = new WeakReference<>(sharedPreferences);
         }
 
         @Override
@@ -73,32 +100,79 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... strings) {
-            int i = 0;
-            for (;;) {
-                if (i == 100) break;
-                i ++;
-                publishProgress(i);
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            OkHttpClient client = new OkHttpClient();
+            Request provinceRequest = new Request.Builder()
+                    .url(provinceAddress)
+                    .build();
+            try {
+                Response provinceResp = client.newCall(provinceRequest).execute();
+                String proRespString = provinceResp.body().string();
+                JSONArray provinceArray = new JSONArray(proRespString);
+                for (int i = 0; i < provinceArray.length(); i++) {
+                    JSONObject provinceObject = provinceArray.getJSONObject(i);
+                    int provinceId = provinceObject.getInt("id");
+                    String cityAddress = provinceAddress + "/" + provinceId;
+                    Request cityRequest = new Request.Builder()
+                            .url(cityAddress)
+                            .build();
+                    Response cityResp = client.newCall(cityRequest).execute();
+                    String cityRespString = cityResp.body().string();
+                    JSONArray cityArray = new JSONArray(cityRespString);
+                    for (int j = 0; j < cityArray.length(); j++) {
+                        JSONObject cityObject = cityArray.getJSONObject(j);
+                        int cityId = cityObject.getInt("id");
+                        String countyAddress = cityAddress + "/" + cityId;
+                        Request countyRequest = new Request.Builder()
+                                .url(countyAddress)
+                                .build();
+                        Response countyResp = client.newCall(countyRequest).execute();
+                        String countyRespString = countyResp.body().string();
+                        JSONArray countyArray = new JSONArray(countyRespString);
+                        for (int k = 0; k < countyArray.length(); k++) {
+                            JSONObject countyObject = countyArray.getJSONObject(k);
+                            String weather_id = countyObject.getString("weather_id");
+                            String countyName = countyObject.getString("name");
+                            allCountyWeatherIdAndName.append(countyName + "&" + weather_id);
+                            allCountyWeatherIdAndName.append("-");
+                            publishProgress(allCountyWeatherIdAndName.toString().length());
+                        }
+                    }
                 }
+            } catch (IOException | JSONException e) {
+                e.printStackTrace();
             }
-            return "success";
+            return allCountyWeatherIdAndName.toString();
         }
 
         @Override
         protected void onProgressUpdate(Integer... values) {
             if (c != null) {
                 Context context = c.get();
-                updateDialog(context, values[0]);
+                double progress = (double)values[0] / TOTAL_LENGTH * 100;
+                updateDialog(context, (int)progress);
             }
         }
 
         @Override
         protected void onPostExecute(String s) {
-            if (s.equals("success")) {
+            if (spf != null) {
+                // 进行数据缓存;
+                SharedPreferences prefs = spf.get();
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putString("getAllCounty", s);
+                editor.apply();
+                // 将自定义字符串数据进行处理、解析;
+                handleCountyMessage(s);
                 dialog.dismiss();
+            }
+        }
+
+        private void handleCountyMessage(String s) {
+            String[] countys = s.split("-");
+            for (String county : countys) {
+                String[] countyMessage = county.split("&");
+                CountyBean countyBean = new CountyBean(countyMessage[0], countyMessage[1]);
+                countyBeanList.add(countyBean);
             }
         }
 

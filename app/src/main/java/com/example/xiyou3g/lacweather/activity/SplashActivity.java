@@ -110,7 +110,7 @@ public class SplashActivity extends AppCompatActivity{
                 loadImageBackground();
             }
         });
-//        129419
+//        38604
     }
 
     private void initWight() {

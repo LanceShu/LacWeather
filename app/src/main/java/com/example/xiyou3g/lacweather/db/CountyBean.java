@@ -6,9 +6,9 @@ package com.example.xiyou3g.lacweather.db;
  */
 
 public class CountyBean {
-    public int weatherId;
+    public String weatherId;
     public String countyName;
-    public CountyBean(int weatherId, String countyName) {
+    public CountyBean(String weatherId, String countyName) {
         this.weatherId = weatherId;
         this.countyName = countyName;
     }

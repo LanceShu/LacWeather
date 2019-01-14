@@ -6,12 +6,14 @@ import android.content.Context
 import org.litepal.LitePal
 
 /**
- * Created by Lance on 2017/8/15.
+ * Created by Lance
+ * on 2017/8/15.
  */
 
 class MyApplication : Application() {
 
     override fun onCreate() {
+        super.onCreate()
         context = applicationContext
 
         /*初始化LitePal数据库*/
