@@ -1,20 +1,24 @@
 package com.example.xiyou3g.lacweather.activity
 
-import android.app.Dialog
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.NavigationView
-import android.support.design.widget.Snackbar
 import android.support.v4.view.GravityCompat
 import android.support.v4.widget.DrawerLayout
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
-import android.view.*
-import android.widget.*
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.widget.LinearLayout
+import android.widget.ScrollView
+import android.widget.TextView
+import android.widget.Toast
 import com.bumptech.glide.Glide
 import com.example.xiyou3g.lacweather.R
 import com.example.xiyou3g.lacweather.gson.Weather
@@ -24,8 +28,6 @@ import com.example.xiyou3g.lacweather.util.LogUtil
 import com.example.xiyou3g.lacweather.util.Utility
 import kotlinx.android.synthetic.main.activity_weather.*
 import kotlinx.android.synthetic.main.aqi.*
-import kotlinx.android.synthetic.main.forecast_item.*
-import kotlinx.android.synthetic.main.nav_header.*
 import kotlinx.android.synthetic.main.nav_header.view.*
 import kotlinx.android.synthetic.main.now.*
 import kotlinx.android.synthetic.main.suggestion.*
@@ -37,7 +39,8 @@ import java.io.IOException
 import java.util.*
 
 /**
- * Created by Lance on 2017/8/17.
+ * Created by
+ * Lance on 2017/8/17.
  */
 
 class WeatherActivity: AppCompatActivity(){
@@ -45,6 +48,8 @@ class WeatherActivity: AppCompatActivity(){
     private var weatherLayout: ScrollView? = null
     private var forecastLayout: LinearLayout?  = null
     private var navView: NavigationView? = null
+    private var mWeatherId: String? = null
+    private var weather: Weather? = null
 
     companion object{
         var drawerLayout: DrawerLayout? = null
@@ -53,9 +58,6 @@ class WeatherActivity: AppCompatActivity(){
             this.requestWeather(weatherId)
         }
     }
-
-    private var mWeatherId: String? = null
-    private var weather: Weather? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,7 +104,6 @@ class WeatherActivity: AppCompatActivity(){
 
         swipeRefresh!!.setOnRefreshListener(object : SwipeRefreshLayout.OnRefreshListener{
             override fun onRefresh() {
-
                 LogUtil.e("weatherId",mWeatherId.toString())
                 requestWeather(mWeatherId)
             }
@@ -112,17 +113,14 @@ class WeatherActivity: AppCompatActivity(){
 
     /*加载必应图片*/
     private fun loadBingPic() {
-
         val requestBingPic = "http://guolin.tech/api/bing_pic"
-        HttpUtil.sendOkHttpRequest(requestBingPic,object : Callback{
+        HttpUtil.sendOkHttpRequest(requestBingPic, object : Callback{
             override fun onFailure(call: Call?, e: IOException?) {
-
                 e!!.printStackTrace()
             }
 
             override fun onResponse(call: Call?, response: Response?) {
-
-                val bingPic = response!!.body().string()
+                val bingPic = response!!.body()?.string()
                 val editor = PreferenceManager.getDefaultSharedPreferences(this@WeatherActivity).edit()
                 editor.putString("bing_pic",bingPic)
                 editor.apply()
@@ -131,7 +129,6 @@ class WeatherActivity: AppCompatActivity(){
                     Glide.with(this@WeatherActivity).load(bingPic).into(navView!!.getHeaderView(0).header_image)
                 })
             }
-
         })
     }
 
@@ -142,18 +139,16 @@ class WeatherActivity: AppCompatActivity(){
 
         HttpUtil.sendOkHttpRequest(weatherUrl,object : Callback{
             override fun onFailure(call: Call?, e: IOException?) {
-
                 runOnUiThread({
                     Toast.makeText(this@WeatherActivity,"获取天气信息失败",Toast.LENGTH_SHORT).show()
                     swipeRefresh!!.isRefreshing = false
                 })
             }
 
-            override fun onResponse(call: Call?, response: Response?) {
-
-                val responseText = response!!.body().string()
-                LogUtil.e("responseText",responseText)
-                weather = Utility.handleWeatherResponse(responseText)
+            override fun onResponse(call: Call?, response: Response) {
+                val responseText = response.body()?.string()
+                LogUtil.e("responseText", responseText!!)
+                weather = Utility.handleWeatherResponse(responseText!!)
                 runOnUiThread( {
                     if(weather != null && "ok".equals(weather!!.status)){
                         val editor = PreferenceManager.getDefaultSharedPreferences(this@WeatherActivity).edit()
@@ -171,15 +166,15 @@ class WeatherActivity: AppCompatActivity(){
     }
 
     /*处理并展示Weather实体类中的数据*/
+    @SuppressLint("SetTextI18n")
     private fun showWeatehrInfo(weather: Weather) {
-
         if(weather != null && weather.status.equals("ok")){
             val cityName = weather.basic!!.cityName
             val updateTime = weather.basic!!.update!!.updateTime!!.split(" ")[1]
             val degree = weather.now!!.temperature + "℃"
             val weatherInfo = weather.now!!.more!!.info
             title_city.text = cityName
-            title_update_time.text = updateTime
+            title_update_time.text = "更新于 " + updateTime
             degree_text.text = degree
             weather_info_text.text = weatherInfo
 
@@ -220,21 +215,17 @@ class WeatherActivity: AppCompatActivity(){
 
     }
 
+    @SuppressLint("ResourceAsColor")
     private fun initWight(){
         weatherLayout = findViewById(R.id.weather_layout) as ScrollView
         forecastLayout = findViewById(R.id.forecast_layout) as LinearLayout
         swipeRefresh = findViewById(R.id.swipe_refresh) as SwipeRefreshLayout
-
         drawerLayout = findViewById(R.id.drawer_layout) as DrawerLayout
-
         navView = findViewById(R.id.nav_view) as NavigationView
         navView!!.setCheckedItem(R.id.nav_my_city)
-
-        swipeRefresh!!.setColorSchemeColors(R.color.colorAccent,R.color.colorPrimary)
-
+        swipeRefresh!!.setColorSchemeColors(R.color.colorAccent, R.color.colorPrimary)
         nav_button.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
-
                 drawerLayout!!.openDrawer(GravityCompat.START)
             }
         })
@@ -248,16 +239,12 @@ class WeatherActivity: AppCompatActivity(){
                         showWeatehrInfo(weather!!)
                     }
                     R.id.nav_change_city->{
-//                        navView!!.setCheckedItem(R.id.nav_change_city)
+                        navView!!.setCheckedItem(R.id.nav_change_city)
                         drawerLayout!!.closeDrawer(GravityCompat.START)
                         drawerLayout!!.openDrawer(GravityCompat.END)
                     }
                     R.id.nav_about->{
                         navView!!.setCheckedItem(R.id.nav_about)
-                        drawerLayout!!.closeDrawers()
-                    }
-                    R.id.nav_help->{
-                        navView!!.setCheckedItem(R.id.nav_help)
                         drawerLayout!!.closeDrawers()
                     }
                 }
@@ -274,7 +261,6 @@ class WeatherActivity: AppCompatActivity(){
     }
 
     private var isExit: Boolean? = false
-
     private fun exitClick() {
         val timer: Timer
         if (isExit === false) {

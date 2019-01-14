@@ -1,6 +1,5 @@
 package com.example.xiyou3g.lacweather.util
 
-import android.text.TextUtils
 import com.example.xiyou3g.lacweather.db.City
 import com.example.xiyou3g.lacweather.db.County
 import com.example.xiyou3g.lacweather.db.Province
@@ -10,11 +9,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * Created by Lance on 2017/8/15.
+ * Created by Lance
+ * on 2017/8/15.
  */
 
 object Utility{
-
     /*解析与处理服务器返回的省级数据*/
     fun handleProvinceRespose(response: String): Boolean{
         if(response.length != 173){
@@ -50,7 +49,7 @@ object Utility{
     }
 
     /*解析与处理服务器返回的县级数据*/
-    fun handleCountResponse(response: String,cityCode: Int): Boolean{
+    fun handleCountResponse(response: String, cityCode: Int): Boolean{
         if(response.length != 173){
             val allCounties: JSONArray = JSONArray(response)
             for(i in  0..allCounties.length()-1){
@@ -72,7 +71,7 @@ object Utility{
             val jsonObject = JSONObject(response)
             val jsonArray = jsonObject.getJSONArray("HeWeather")
             val weatherContent = jsonArray.getJSONObject(0).toString()
-            return Gson().fromJson(weatherContent,Weather::class.java)
+            return Gson().fromJson(weatherContent, Weather::class.java)
         }
         return null
     }

@@ -3,7 +3,8 @@ package com.example.xiyou3g.lacweather.db
 import org.litepal.crud.DataSupport
 
 /**
- * Created by Lance on 2017/8/15.
+ * Created by Lance
+ * on 2017/8/15.
  */
 
 class County : DataSupport(){

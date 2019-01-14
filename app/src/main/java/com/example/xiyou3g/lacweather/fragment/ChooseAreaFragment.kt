@@ -4,18 +4,10 @@ import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v4.view.GravityCompat
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.ListView
-import android.widget.TextView
-import android.widget.Toast
-
+import android.widget.*
 import com.example.xiyou3g.lacweather.R
 import com.example.xiyou3g.lacweather.activity.MainActivity
 import com.example.xiyou3g.lacweather.activity.WeatherActivity
@@ -25,20 +17,16 @@ import com.example.xiyou3g.lacweather.db.Province
 import com.example.xiyou3g.lacweather.util.HttpUtil
 import com.example.xiyou3g.lacweather.util.LogUtil
 import com.example.xiyou3g.lacweather.util.Utility
-import kotlinx.android.synthetic.main.activity_weather.*
-
-import org.litepal.crud.DataSupport
-
-import java.io.IOException
-import java.util.ArrayList
-
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
-import org.jetbrains.anko.support.v4.drawerLayout
+import org.litepal.crud.DataSupport
+import java.io.IOException
+import java.util.*
 
 /**
- * Created by Lance on 2017/8/16.
+ * Created by Lance
+ * on 2017/8/16.
  */
 
 class ChooseAreaFragment : Fragment() {
@@ -75,12 +63,10 @@ class ChooseAreaFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        queryProvinces()
         listView!!.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
             if (currentLevel == LEVEL_PROVINCE) {
                 selectedProvince = provinceList!![position]
-//                LogUtil.e("position",position.toString())
-//                LogUtil.e("selectProvince",selectedProvince!!.provinceName.toString())
-//                LogUtil.e("selectProvince",selectedProvince!!.provinceCode.toString())
                 queryCities()
             } else if (currentLevel == LEVEL_CITY) {
                 selectedCity = cityList!![position]
@@ -89,7 +75,7 @@ class ChooseAreaFragment : Fragment() {
             }else if(currentLevel == LEVEL_COUNTY){
                 val stringId = countyList!![position].weatherId
                 if(activity is MainActivity){
-                    val intent = Intent(activity,WeatherActivity::class.java)
+                    val intent = Intent(activity, WeatherActivity::class.java)
                     intent.putExtra("weather_id",stringId)
                     startActivity(intent)
                     activity.finish()
@@ -98,7 +84,7 @@ class ChooseAreaFragment : Fragment() {
 //                    activity.drawerLayout!!.closeDrawer(GravityCompat.END)
 //                    activity.swipeRefresh!!.isRefreshing = true
 //                    activity.requestWeather(stringId)
-                    val intent = Intent(activity,WeatherActivity::class.java)
+                    val intent = Intent(activity, WeatherActivity::class.java)
                     intent.putExtra("weather_id",stringId)
                     intent.putExtra("nav_change",1)
                     LogUtil.e("change position",countyList!![position].weatherId.toString())
@@ -107,7 +93,6 @@ class ChooseAreaFragment : Fragment() {
                 }
             }
         }
-
         backButton!!.setOnClickListener {
             if (currentLevel == LEVEL_COUNTY) {
                 queryCities()
@@ -115,7 +100,6 @@ class ChooseAreaFragment : Fragment() {
                 queryProvinces()
             }
         }
-        queryProvinces()
     }
 
     private fun queryProvinces() {
@@ -188,15 +172,15 @@ class ChooseAreaFragment : Fragment() {
 
             @Throws(IOException::class)
             override fun onResponse(call: Call, response: Response) {
-                val responseText = response.body().string()
+                val responseText = response.body()?.string()
 //                LogUtil.e("reponse", responseText)
                 var result = false
                 if ("province" == type) {
-                    result = Utility.handleProvinceRespose(responseText)
+                    result = Utility.handleProvinceRespose(responseText!!)
                 } else if ("city" == type) {
-                    result = Utility.handleCityResponse(responseText, selectedProvince!!.provinceCode)
+                    result = Utility.handleCityResponse(responseText!!, selectedProvince!!.provinceCode)
                 } else if ("county" == type) {
-                    result = Utility.handleCountResponse(responseText, selectedCity!!.cityCode)
+                    result = Utility.handleCountResponse(responseText!!, selectedCity!!.cityCode)
                 }
 
                 if (result) {
@@ -210,7 +194,7 @@ class ChooseAreaFragment : Fragment() {
                             queryCounties()
                         }
                     }
-                }else {
+                } else {
                     activity.runOnUiThread(Runnable {
                         closeProgressDialog()
                         Toast.makeText(activity,"获取信息失败",Toast.LENGTH_SHORT).show()
@@ -236,7 +220,6 @@ class ChooseAreaFragment : Fragment() {
     }
 
     companion object {
-
         val LEVEL_PROVINCE = 0
         val LEVEL_CITY = 1
         val LEVEL_COUNTY = 2
