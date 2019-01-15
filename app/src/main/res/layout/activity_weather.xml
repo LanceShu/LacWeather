@@ -35,7 +35,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <include layout="@layout/title"/>
+                    <include layout="@layout/title_bar"/>
 
                     <include layout="@layout/now"/>
 

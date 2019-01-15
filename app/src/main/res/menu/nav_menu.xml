@@ -5,15 +5,19 @@
 
         <item android:id="@+id/nav_my_city"
             android:icon="@mipmap/local_city"
-            android:title="我的城市"/>
+            android:title="@string/menu_local_city" />
 
         <item android:id="@+id/nav_change_city"
             android:icon="@mipmap/change_city"
-            android:title="切换城市" />
+            android:title="@string/menu_change_city" />
+
+        <item android:id="@+id/nav_find_city"
+            android:icon="@mipmap/find_city"
+            android:title="@string/menu_find_city" />
 
         <item android:id="@+id/nav_about"
             android:icon="@mipmap/about"
-            android:title="关于软件"/>
+            android:title="@string/menu_about" />
 
 
     </group>

@@ -10,7 +10,7 @@ import android.view.KeyEvent;
 
 import com.example.xiyou3g.lacweather.R;
 import com.example.xiyou3g.lacweather.fragment.ChooseAreaFragment;
-import com.example.xiyou3g.lacweather.util.LogUtil;
+import com.example.xiyou3g.lacweather.fragment.FindCityFragment;
 
 /**
  * Created by Lance
@@ -18,10 +18,11 @@ import com.example.xiyou3g.lacweather.util.LogUtil;
  */
 
 public class LoadFragmentActivity extends AppCompatActivity
-        implements ChooseAreaFragment.OnSetBackListener {
+        implements ChooseAreaFragment.OnChooseSetBackListener {
     private static final int layoutId = R.id.load_fragment;
     private static final String TAG = "LoadFragmentActivity";
     private ChooseAreaFragment chooseAreaFragment;
+    private Fragment currentFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -37,6 +38,12 @@ public class LoadFragmentActivity extends AppCompatActivity
                 chooseAreaFragment = new ChooseAreaFragment();
                 chooseAreaFragment.setBackListener(this);
                 addFragment(layoutId, chooseAreaFragment);
+                currentFragment = chooseAreaFragment;
+                break;
+            case "find_city":
+                FindCityFragment findCityFragment = new FindCityFragment();
+                addFragment(layoutId, findCityFragment);
+                currentFragment = findCityFragment;
                 break;
             default:
                 break;
@@ -53,17 +60,21 @@ public class LoadFragmentActivity extends AppCompatActivity
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (chooseAreaFragment.getCurrentLevel() == 0) {
-                finish();
+            if (currentFragment instanceof ChooseAreaFragment) {
+                if (chooseAreaFragment.getCurrentLevel() == 0) {
+                    finish();
+                } else {
+                    chooseBack();
+                }
             } else {
-                back();
+                finish();
             }
         }
         return false;
     }
 
     @Override
-    public void back() {
+    public void chooseBack() {
         chooseAreaFragment.backToLast();
     }
 }

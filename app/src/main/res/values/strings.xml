@@ -1,11 +1,20 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">LacWeather</string>
+<resources>
+    <string name="app_name">极简天气</string>
     <string name="splash_content">background</string>
+
     <string name="splash_content_title_1">极</string>
     <string name="splash_content_title_2">简</string>
     <string name="splash_content_title_3">天</string>
     <string name="splash_content_title_4">气</string>
+
     <string name="splash_content_title_5">Copyright@2019</string>
     <string name="main_dialog_title">温馨提示：</string>
     <string name="main_dialog_content" >正在加载城市列表…</string>
+
+    <string name="menu_local_city" >我的城市</string>
+    <string name="menu_change_city" >切换城市</string>
+    <string name="menu_find_city" >查找城市</string>
+    <string name="menu_about" >关于软件</string>
+
+    <string name="find_edit" >请输入所需查找的城市</string>
 </resources>

@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.xiyou3g.lacweather.R;
 import com.example.xiyou3g.lacweather.db.CountyBean;
 import com.example.xiyou3g.lacweather.fragment.ChooseAreaFragment;
+import com.example.xiyou3g.lacweather.util.LogUtil;
 import com.example.xiyou3g.lacweather.util.ResourceUitls;
 
 import org.json.JSONArray;
@@ -42,7 +43,7 @@ import okhttp3.Response;
  */
 
 public class MainActivity extends AppCompatActivity
-        implements ChooseAreaFragment.OnSetBackListener {
+        implements ChooseAreaFragment.OnChooseSetBackListener {
     private final static String provinceAddress = "http://guolin.tech/api/china";
     private LinearLayout forecastLayout;
     private Boolean isExit = false;
@@ -81,7 +82,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void back() {
+    public void chooseBack() {
         chooseAreaFragment.backToLast();
     }
 
@@ -89,7 +90,7 @@ public class MainActivity extends AppCompatActivity
         private WeakReference<Context> c;
         private WeakReference<SharedPreferences> spf;
         private ProgressDialog dialog;
-        private final int TOTAL_LENGTH = 38604;
+        private final int TOTAL_LENGTH = 46626;
 
         GetCountyAsyncTask(Context context, SharedPreferences sharedPreferences) {
             c = new WeakReference<>(context);
@@ -129,6 +130,7 @@ public class MainActivity extends AppCompatActivity
                     for (int j = 0; j < cityArray.length(); j++) {
                         JSONObject cityObject = cityArray.getJSONObject(j);
                         int cityId = cityObject.getInt("id");
+                        String cityName = cityObject.getString("name");
                         String countyAddress = cityAddress + "/" + cityId;
                         Request countyRequest = new Request.Builder()
                                 .url(countyAddress)
@@ -140,7 +142,8 @@ public class MainActivity extends AppCompatActivity
                             JSONObject countyObject = countyArray.getJSONObject(k);
                             String weather_id = countyObject.getString("weather_id");
                             String countyName = countyObject.getString("name");
-                            allCountyWeatherIdAndName.append(countyName + "&" + weather_id);
+                            allCountyWeatherIdAndName.append(countyName + "&"
+                                    + weather_id + "&" + cityName);
                             allCountyWeatherIdAndName.append("-");
                             publishProgress(allCountyWeatherIdAndName.toString().length());
                         }
@@ -152,6 +155,7 @@ public class MainActivity extends AppCompatActivity
             return allCountyWeatherIdAndName.toString();
         }
 
+        // 刷新加载进度条;
         @Override
         protected void onProgressUpdate(Integer... values) {
             if (c != null) {
@@ -179,7 +183,8 @@ public class MainActivity extends AppCompatActivity
             String[] countys = s.split("-");
             for (String county : countys) {
                 String[] countyMessage = county.split("&");
-                CountyBean countyBean = new CountyBean(countyMessage[0], countyMessage[1]);
+                CountyBean countyBean = new CountyBean(countyMessage[0],
+                        countyMessage[1], countyMessage[2]);
                 countyBeanList.add(countyBean);
             }
         }
@@ -214,7 +219,7 @@ public class MainActivity extends AppCompatActivity
             if (chooseAreaFragment.getCurrentLevel() == 0) {
                 exitClick();
             } else {
-                back();
+                chooseBack();
             }
         }
         return false;

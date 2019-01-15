@@ -3,7 +3,6 @@ package com.example.xiyou3g.lacweather.activity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.preference.PreferenceManager
 import android.support.design.widget.NavigationView
@@ -31,7 +30,7 @@ import kotlinx.android.synthetic.main.aqi.*
 import kotlinx.android.synthetic.main.nav_header.view.*
 import kotlinx.android.synthetic.main.now.*
 import kotlinx.android.synthetic.main.suggestion.*
-import kotlinx.android.synthetic.main.title.*
+import kotlinx.android.synthetic.main.title_bar.*
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
@@ -54,11 +53,9 @@ class WeatherActivity: AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if(Build.VERSION.SDK_INT >= 21){
-            val decerView = window.decorView
-            decerView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            window.statusBarColor = Color.TRANSPARENT
-        }
+        val decerView = window.decorView
+        decerView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        window.statusBarColor = Color.TRANSPARENT
         setContentView(R.layout.activity_weather)
         initWight()
 
@@ -216,6 +213,7 @@ class WeatherActivity: AppCompatActivity(){
         navView = findViewById(R.id.nav_view) as NavigationView
         navView!!.setCheckedItem(R.id.nav_my_city)
         swipeRefresh!!.setColorSchemeColors(R.color.colorAccent, R.color.colorPrimary)
+        nav_button.setImageResource(R.mipmap.category)
         nav_button.setOnClickListener(object : View.OnClickListener{
             override fun onClick(v: View?) {
                 drawerLayout!!.openDrawer(GravityCompat.START)
@@ -225,19 +223,22 @@ class WeatherActivity: AppCompatActivity(){
         navView!!.setNavigationItemSelectedListener(object : NavigationView.OnNavigationItemSelectedListener{
             override fun onNavigationItemSelected(item: MenuItem): Boolean {
                 when(item.itemId){
-                    R.id.nav_my_city->{
+                    R.id.nav_my_city -> {
                         navView!!.setCheckedItem(R.id.nav_my_city)
                         drawerLayout!!.closeDrawers()
                         showWeatehrInfo(weather!!)
                     }
-                    R.id.nav_change_city->{
+                    R.id.nav_change_city -> {
                         navView!!.setCheckedItem(R.id.nav_change_city)
                         drawerLayout!!.closeDrawer(GravityCompat.START)
-                        val intent = Intent(this@WeatherActivity, LoadFragmentActivity::class.java)
-                        intent.putExtra("load_fragment", "change_city")
-                        startActivity(intent)
+                        startLoadFragmentActivity("change_city")
                     }
-                    R.id.nav_about->{
+                    R.id.nav_find_city -> {
+                        navView!!.setCheckedItem(R.id.nav_find_city)
+                        drawerLayout!!.closeDrawers()
+                        startLoadFragmentActivity("find_city")
+                    }
+                    R.id.nav_about -> {
                         navView!!.setCheckedItem(R.id.nav_about)
                         drawerLayout!!.closeDrawers()
                     }
@@ -245,6 +246,12 @@ class WeatherActivity: AppCompatActivity(){
                 return true
             }
         })
+    }
+
+    private fun startLoadFragmentActivity(type: String) {
+        val intent = Intent(this@WeatherActivity, LoadFragmentActivity::class.java)
+        intent.putExtra("load_fragment", type)
+        startActivity(intent)
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {

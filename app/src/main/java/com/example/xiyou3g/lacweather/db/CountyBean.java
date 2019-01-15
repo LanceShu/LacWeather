@@ -8,8 +8,10 @@ package com.example.xiyou3g.lacweather.db;
 public class CountyBean {
     public String weatherId;
     public String countyName;
-    public CountyBean(String weatherId, String countyName) {
+    public String cityName;
+    public CountyBean(String weatherId, String countyName, String cityName) {
         this.weatherId = weatherId;
         this.countyName = countyName;
+        this.cityName = cityName;
     }
 }

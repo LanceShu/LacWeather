@@ -33,16 +33,16 @@ import java.util.*
 class ChooseAreaFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
         if (backListener != null) {
-            backListener!!.back()
+            backListener!!.chooseBack()
         }
     }
 
-    fun setBackListener(backListener: OnSetBackListener) {
+    fun setBackListener(backListener: OnChooseSetBackListener) {
         this.backListener = backListener
     }
 
-    interface OnSetBackListener {
-        fun back()
+    interface OnChooseSetBackListener {
+        fun chooseBack()
     }
 
     private var progressDialog: ProgressDialog? = null
@@ -66,7 +66,7 @@ class ChooseAreaFragment : Fragment(), View.OnClickListener {
     private var selectedCity: City? = null
     /*当前选中的级别*/
     var currentLevel: Int = 0
-    private var backListener: OnSetBackListener? = null
+    private var backListener: OnChooseSetBackListener? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.choose_area, container, false)
