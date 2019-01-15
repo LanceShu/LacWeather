@@ -9,7 +9,7 @@ public class CountyBean {
     public String weatherId;
     public String countyName;
     public String cityName;
-    public CountyBean(String weatherId, String countyName, String cityName) {
+    public CountyBean(String countyName, String weatherId, String cityName) {
         this.weatherId = weatherId;
         this.countyName = countyName;
         this.cityName = cityName;

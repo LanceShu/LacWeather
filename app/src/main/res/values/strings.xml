@@ -17,4 +17,5 @@
     <string name="menu_about" >关于软件</string>
 
     <string name="find_edit" >请输入所需查找的城市</string>
+    <string name="find_error_content" >无搜索结果</string>
 </resources>

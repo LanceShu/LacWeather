@@ -92,19 +92,15 @@ class ChooseAreaFragment : Fragment(), View.OnClickListener {
                 val stringId = countyList!![position].weatherId
                 if(activity is MainActivity){
                     val intent = Intent(activity, WeatherActivity::class.java)
-                    intent.putExtra("weather_id",stringId)
+                    intent.putExtra("weather_id", stringId)
                     startActivity(intent)
                     activity.finish()
                 } else if (activity is LoadFragmentActivity) {
-//                    val activity1 = activity@(WeatherActivity)
-//                    activity.drawerLayout!!.closeDrawer(GravityCompat.END)
-//                    activity.swipeRefresh!!.isRefreshing = true
-//                    activity.requestWeather(stringId)
-                    val intent = Intent(activity, WeatherActivity::class.java)
-                    intent.putExtra("weather_id",stringId)
-                    intent.putExtra("nav_change",1)
-                    LogUtil.e("change position",countyList!![position].weatherId.toString())
-                    startActivity(intent)
+//                    val intent = Intent(activity, WeatherActivity::class.java)
+                    val intent = Intent()
+                    intent.putExtra("weather_id", stringId)
+                    intent.putExtra("nav_change", 1)
+                    activity.setResult(1, intent)
                     activity.finish()
                 }
             }

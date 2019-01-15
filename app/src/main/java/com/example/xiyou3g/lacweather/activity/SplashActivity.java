@@ -128,6 +128,7 @@ public class SplashActivity extends AppCompatActivity{
 
     private void setAlphaAnimByView(View view, float fromAlpha, float toAlpha,
                                     int offStart, int duration) {
+        view.setVisibility(View.VISIBLE);
         AlphaAnimation alphaAnimation = new AlphaAnimation(fromAlpha, toAlpha);
         alphaAnimation.setStartOffset(offStart);
         alphaAnimation.setDuration(duration);

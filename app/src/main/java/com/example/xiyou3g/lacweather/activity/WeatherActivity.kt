@@ -34,6 +34,7 @@ import kotlinx.android.synthetic.main.title_bar.*
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
+import org.jetbrains.anko.startActivityForResult
 import java.io.IOException
 import java.util.*
 
@@ -65,7 +66,6 @@ class WeatherActivity: AppCompatActivity(){
             weatherLayout!!.visibility = View.INVISIBLE
             swipeRefresh!!.isRefreshing = true
             mWeatherId = intent.getStringExtra("weather_id")
-            LogUtil.e("change refresh",mWeatherId.toString())
             requestWeather(mWeatherId)
         }else{
             val prefs = PreferenceManager.getDefaultSharedPreferences(this)
@@ -77,11 +77,11 @@ class WeatherActivity: AppCompatActivity(){
                 showWeatehrInfo(weather!!)
             }else{
                 /*无缓存时去服务器查询天气*/
-                mWeatherId = intent.getStringExtra("weather_id")
                 weatherLayout!!.visibility = View.INVISIBLE
+                swipeRefresh!!.isRefreshing = true
+                mWeatherId = intent.getStringExtra("weather_id")
                 requestWeather(mWeatherId)
             }
-
             val bingPic = prefs.getString("bing_pic",null)
             if(bingPic != null){
                 Glide.with(this).load(bingPic).into(bing_pc_img)
@@ -96,7 +96,6 @@ class WeatherActivity: AppCompatActivity(){
                 LogUtil.e("weatherId",mWeatherId.toString())
                 requestWeather(mWeatherId)
             }
-
         })
     }
 
@@ -251,7 +250,17 @@ class WeatherActivity: AppCompatActivity(){
     private fun startLoadFragmentActivity(type: String) {
         val intent = Intent(this@WeatherActivity, LoadFragmentActivity::class.java)
         intent.putExtra("load_fragment", type)
-        startActivity(intent)
+        startActivityForResult(intent, 0)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 0 && (resultCode == 1 || resultCode == 2)) {
+            weatherLayout!!.visibility = View.INVISIBLE
+            swipeRefresh!!.isRefreshing = true
+            mWeatherId = data!!.getStringExtra("weather_id")
+            requestWeather(mWeatherId)
+        }
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {

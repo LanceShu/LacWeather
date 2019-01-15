@@ -15,7 +15,8 @@
         android:padding="12dp"
         app:layout_constraintTop_toBottomOf="@id/find_city_bar"
         app:layout_constraintRight_toRightOf="parent"
-        android:src="@mipmap/find_city" />
+        android:src="@mipmap/find_city"
+        android:visibility="gone"/>
 
     <EditText
         android:id="@+id/find_edit"
@@ -31,5 +32,27 @@
         android:textColorHint="@color/edit_hint_color"
         android:textColor="@color/edit_back_color"
         android:textSize="14sp"/>
+
+    <ListView
+        android:id="@+id/find_city_list"
+        android:layout_width="match_parent"
+        app:layout_constraintVertical_weight="1"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/find_edit"
+        android:padding="2dp"/>
+
+    <TextView
+        android:id="@+id/find_error"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintTop_toBottomOf="@id/find_edit"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="@string/find_error_content"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:textColor="@color/edit_hint_color"
+        android:visibility="visible"/>
 
 </android.support.constraint.ConstraintLayout>
