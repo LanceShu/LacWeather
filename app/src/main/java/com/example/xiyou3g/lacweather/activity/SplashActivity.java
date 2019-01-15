@@ -3,6 +3,7 @@ package com.example.xiyou3g.lacweather.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -100,6 +101,9 @@ public class SplashActivity extends AppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.splash_layout);
+        View decorview = getWindow().getDecorView();
+        decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         currentTime = (int) System.currentTimeMillis();
         initWight();
@@ -110,7 +114,6 @@ public class SplashActivity extends AppCompatActivity{
                 loadImageBackground();
             }
         });
-//        38604
     }
 
     private void initWight() {

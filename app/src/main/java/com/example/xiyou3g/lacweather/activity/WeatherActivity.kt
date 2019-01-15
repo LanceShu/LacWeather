@@ -49,14 +49,8 @@ class WeatherActivity: AppCompatActivity(){
     private var navView: NavigationView? = null
     private var mWeatherId: String? = null
     private var weather: Weather? = null
-
-    companion object{
-        var drawerLayout: DrawerLayout? = null
-        var swipeRefresh: SwipeRefreshLayout? = null
-        fun requestWeather(weatherId: String?){
-            this.requestWeather(weatherId)
-        }
-    }
+    private var drawerLayout: DrawerLayout? = null
+    private var swipeRefresh: SwipeRefreshLayout? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +65,6 @@ class WeatherActivity: AppCompatActivity(){
         val nav_change = intent.getIntExtra("nav_change",-1)
         LogUtil.e("nav_change",nav_change.toString())
         if(nav_change == 1){
-//            drawerLayout!!.closeDrawer(GravityCompat.END)
             weatherLayout!!.visibility = View.INVISIBLE
             swipeRefresh!!.isRefreshing = true
             mWeatherId = intent.getStringExtra("weather_id")
@@ -240,7 +233,6 @@ class WeatherActivity: AppCompatActivity(){
                     R.id.nav_change_city->{
                         navView!!.setCheckedItem(R.id.nav_change_city)
                         drawerLayout!!.closeDrawer(GravityCompat.START)
-//                        drawerLayout!!.openDrawer(GravityCompat.END)
                         val intent = Intent(this@WeatherActivity, LoadFragmentActivity::class.java)
                         intent.putExtra("load_fragment", "change_city")
                         startActivity(intent)
