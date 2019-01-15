@@ -44,7 +44,6 @@ import java.util.*
  */
 
 class WeatherActivity: AppCompatActivity(){
-
     private var weatherLayout: ScrollView? = null
     private var forecastLayout: LinearLayout?  = null
     private var navView: NavigationView? = null
@@ -72,7 +71,7 @@ class WeatherActivity: AppCompatActivity(){
         val nav_change = intent.getIntExtra("nav_change",-1)
         LogUtil.e("nav_change",nav_change.toString())
         if(nav_change == 1){
-            drawerLayout!!.closeDrawer(GravityCompat.END)
+//            drawerLayout!!.closeDrawer(GravityCompat.END)
             weatherLayout!!.visibility = View.INVISIBLE
             swipeRefresh!!.isRefreshing = true
             mWeatherId = intent.getStringExtra("weather_id")
@@ -241,7 +240,10 @@ class WeatherActivity: AppCompatActivity(){
                     R.id.nav_change_city->{
                         navView!!.setCheckedItem(R.id.nav_change_city)
                         drawerLayout!!.closeDrawer(GravityCompat.START)
-                        drawerLayout!!.openDrawer(GravityCompat.END)
+//                        drawerLayout!!.openDrawer(GravityCompat.END)
+                        val intent = Intent(this@WeatherActivity, LoadFragmentActivity::class.java)
+                        intent.putExtra("load_fragment", "change_city")
+                        startActivity(intent)
                     }
                     R.id.nav_about->{
                         navView!!.setCheckedItem(R.id.nav_about)

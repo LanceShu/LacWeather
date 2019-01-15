@@ -23,6 +23,7 @@
         </activity>
         <activity android:name=".activity.MainActivity" android:screenOrientation="portrait"/>
         <activity android:name=".activity.WeatherActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".activity.LoadFragmentActivity" android:screenOrientation="portrait"/>
         <service android:name=".service.AutoUpdateService" android:exported="true" android:enabled="true"/>
     </application>
 

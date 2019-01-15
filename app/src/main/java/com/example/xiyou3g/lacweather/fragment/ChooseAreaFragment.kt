@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import com.example.xiyou3g.lacweather.R
+import com.example.xiyou3g.lacweather.activity.LoadFragmentActivity
 import com.example.xiyou3g.lacweather.activity.MainActivity
 import com.example.xiyou3g.lacweather.activity.WeatherActivity
 import com.example.xiyou3g.lacweather.db.City
@@ -29,13 +30,28 @@ import java.util.*
  * on 2017/8/16.
  */
 
-class ChooseAreaFragment : Fragment() {
+class ChooseAreaFragment : Fragment(), View.OnClickListener {
+    override fun onClick(v: View?) {
+        if (backListener != null) {
+            backListener!!.back()
+        }
+    }
+
+    fun setBackListener(backListener: OnSetBackListener) {
+        this.backListener = backListener
+    }
+
+    interface OnSetBackListener {
+        fun back()
+    }
+
     private var progressDialog: ProgressDialog? = null
     private var titleText: TextView? = null
-    private var backButton: Button? = null
+    private var backButton: ImageView? = null
     private var listView: ListView? = null
     private var adapter: ArrayAdapter<String>? = null
     private val dataList = ArrayList<String>()
+    val TAG = "ChooseAreaFragment"
 
     /*省列表*/
     private var provinceList: List<Province>? = null
@@ -49,12 +65,13 @@ class ChooseAreaFragment : Fragment() {
     /*选中的城市*/
     private var selectedCity: City? = null
     /*当前选中的级别*/
-    private var currentLevel: Int = 0
+    var currentLevel: Int = 0
+    private var backListener: OnSetBackListener? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.choose_area, container, false)
         titleText = view.findViewById(R.id.title_text) as TextView
-        backButton = view.findViewById(R.id.back_button) as Button
+        backButton = view.findViewById(R.id.back_button) as ImageView
         listView = view.findViewById(R.id.list_view) as ListView
         adapter = ArrayAdapter(context, android.R.layout.simple_expandable_list_item_1, dataList)
         listView!!.adapter = adapter
@@ -70,7 +87,6 @@ class ChooseAreaFragment : Fragment() {
                 queryCities()
             } else if (currentLevel == LEVEL_CITY) {
                 selectedCity = cityList!![position]
-//                LogUtil.e("selectCity",selectedCity!!.cityCode.toString())
                 queryCounties()
             }else if(currentLevel == LEVEL_COUNTY){
                 val stringId = countyList!![position].weatherId
@@ -79,7 +95,7 @@ class ChooseAreaFragment : Fragment() {
                     intent.putExtra("weather_id",stringId)
                     startActivity(intent)
                     activity.finish()
-                }else if(activity is WeatherActivity) {
+                } else if (activity is LoadFragmentActivity) {
 //                    val activity1 = activity@(WeatherActivity)
 //                    activity.drawerLayout!!.closeDrawer(GravityCompat.END)
 //                    activity.swipeRefresh!!.isRefreshing = true
@@ -93,12 +109,14 @@ class ChooseAreaFragment : Fragment() {
                 }
             }
         }
-        backButton!!.setOnClickListener {
-            if (currentLevel == LEVEL_COUNTY) {
-                queryCities()
-            } else if (currentLevel == LEVEL_CITY) {
-                queryProvinces()
-            }
+        backButton!!.setOnClickListener(this)
+    }
+
+    fun backToLast() {
+        if (currentLevel == LEVEL_COUNTY) {
+            queryCities()
+        } else if (currentLevel == LEVEL_CITY) {
+            queryProvinces()
         }
     }
 

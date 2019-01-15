@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -42,13 +41,15 @@ import okhttp3.Response;
  * on 2019/1/14.
  */
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements ChooseAreaFragment.OnSetBackListener {
     private final static String provinceAddress = "http://guolin.tech/api/china";
     private LinearLayout forecastLayout;
     private Boolean isExit = false;
     private final static String TAG = "MainActivity";
     public static StringBuffer allCountyWeatherIdAndName;
     public static List<CountyBean> countyBeanList;
+    private ChooseAreaFragment chooseAreaFragment;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         allCountyWeatherIdAndName = new StringBuffer();
         countyBeanList = new ArrayList<>();
+        chooseAreaFragment = new ChooseAreaFragment();
+        chooseAreaFragment.setBackListener(this);
         initWight();
         if (prefs.getString("getAllCounty", null) == null) {
             new GetCountyAsyncTask(this, prefs)
@@ -74,7 +77,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initWight() {
-        addFragment(R.id.choose_area_fragment, new ChooseAreaFragment());
+        addFragment(R.id.choose_area_fragment, chooseAreaFragment);
+    }
+
+    @Override
+    public void back() {
+        chooseAreaFragment.backToLast();
     }
 
     static class GetCountyAsyncTask extends AsyncTask<String, Integer, String> {
@@ -203,7 +211,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if(keyCode == KeyEvent.KEYCODE_BACK){
-            exitClick();
+            if (chooseAreaFragment.getCurrentLevel() == 0) {
+                exitClick();
+            } else {
+                back();
+            }
         }
         return false;
     }
