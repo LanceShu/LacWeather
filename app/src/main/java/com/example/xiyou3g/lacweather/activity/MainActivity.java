@@ -15,16 +15,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.example.xiyou3g.lacweather.R;
-import com.example.xiyou3g.lacweather.asynctask.GetLocalCityAsyncTask;
 import com.example.xiyou3g.lacweather.db.CountyBean;
 import com.example.xiyou3g.lacweather.fragment.ChooseAreaFragment;
 import com.example.xiyou3g.lacweather.util.LogUtil;
 import com.example.xiyou3g.lacweather.util.ResourceUitls;
-import com.example.xiyou3g.lacweather.util.ThreadPoolUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,12 +46,11 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity
         implements ChooseAreaFragment.OnChooseSetBackListener {
     private final static String provinceAddress = "http://guolin.tech/api/china";
-    private LinearLayout forecastLayout;
     private Boolean isExit = false;
     private final static String TAG = "MainActivity";
-    public static StringBuffer allCountyWeatherIdAndName;
     public static List<CountyBean> countyBeanList;
     private ChooseAreaFragment chooseAreaFragment;
+    private GetCountyAsyncTask countyAsyncTask;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -64,25 +60,35 @@ public class MainActivity extends AppCompatActivity
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         getWindow().setStatusBarColor(Color.parseColor("#2A80B9"));
         setContentView(R.layout.activity_main);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        allCountyWeatherIdAndName = new StringBuffer();
         countyBeanList = new ArrayList<>();
         chooseAreaFragment = new ChooseAreaFragment();
         chooseAreaFragment.setBackListener(this);
         initWight();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         if (prefs.getString("getAllCounty", null) == null) {
-            new GetCountyAsyncTask(this, prefs)
-                    .execute(provinceAddress);
+            countyAsyncTask = new GetCountyAsyncTask(this, prefs);
+            countyAsyncTask.execute(provinceAddress);
         } else {
             String allCountyMessage = prefs.getString("getAllCounty", null);
-            new GetCountyAsyncTask(this, null)
-                    .handleCountyMessage(allCountyMessage);
+            countyAsyncTask = new GetCountyAsyncTask(this, null);
+            countyAsyncTask.handleCountyMessage(allCountyMessage);
         }
         if(prefs.getString("weather",null) != null){
             Intent intent = new Intent(this, WeatherActivity.class);
             startActivity(intent);
             finish();
         }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        countyAsyncTask.cancel(true);
     }
 
     private void initWight() {
@@ -99,18 +105,19 @@ public class MainActivity extends AppCompatActivity
         private WeakReference<SharedPreferences> spf;
         private ProgressDialog dialog;
         private final int TOTAL_LENGTH = 46626;
+        private StringBuffer stringBuffer;
 
         GetCountyAsyncTask(Context context, SharedPreferences sharedPreferences) {
             c = new WeakReference<>(context);
             spf = new WeakReference<>(sharedPreferences);
+            stringBuffer = new StringBuffer();
         }
 
         @Override
         protected void onPreExecute() {
             if (c != null) {
                 Context context = c.get();
-                showDialog(context,
-                        getStringById(context, R.string.main_dialog_title),
+                showDialog(context, getStringById(context, R.string.main_dialog_title),
                         getStringById(context, R.string.main_dialog_content) + "  0%");
             }
         }
@@ -150,17 +157,17 @@ public class MainActivity extends AppCompatActivity
                             JSONObject countyObject = countyArray.getJSONObject(k);
                             String weather_id = countyObject.getString("weather_id");
                             String countyName = countyObject.getString("name");
-                            allCountyWeatherIdAndName.append(countyName + "&"
+                            stringBuffer.append(countyName + "&"
                                     + weather_id + "&" + cityName);
-                            allCountyWeatherIdAndName.append("-");
-                            publishProgress(allCountyWeatherIdAndName.toString().length());
+                            stringBuffer.append("-");
+                            publishProgress(stringBuffer.toString().length());
                         }
                     }
                 }
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
             }
-            return allCountyWeatherIdAndName.toString();
+            return stringBuffer.toString();
         }
 
         // 刷新加载进度条;
@@ -173,6 +180,7 @@ public class MainActivity extends AppCompatActivity
             }
         }
 
+        // 异步请求完后处理数据；
         @Override
         protected void onPostExecute(String s) {
             if (spf != null) {
@@ -183,9 +191,18 @@ public class MainActivity extends AppCompatActivity
                 editor.apply();
                 // 将自定义字符串数据进行处理、解析;
                 handleCountyMessage(s);
-                if (dialog.isShowing()) {
+                if (dialog != null && dialog.isShowing()) {
                     dialog.dismiss();
                 }
+            }
+        }
+
+        // 中断事件发生时的操作；
+        @Override
+        protected void onCancelled() {
+            stringBuffer = null;
+            if (dialog != null && dialog.isShowing()) {
+                dialog.dismiss();
             }
         }
 
@@ -193,9 +210,11 @@ public class MainActivity extends AppCompatActivity
             String[] countys = s.split("-");
             for (String county : countys) {
                 String[] countyMessage = county.split("&");
-                CountyBean countyBean = new CountyBean(countyMessage[0],
-                        countyMessage[1], countyMessage[2]);
-                countyBeanList.add(countyBean);
+                if (countyMessage.length == 3) {
+                    CountyBean countyBean = new CountyBean(countyMessage[0],
+                            countyMessage[1], countyMessage[2]);
+                    countyBeanList.add(countyBean);
+                }
             }
         }
 
@@ -204,7 +223,6 @@ public class MainActivity extends AppCompatActivity
             dialog.setTitle(title);
             dialog.setMessage(content);
             dialog.setCancelable(false);
-            dialog.setCanceledOnTouchOutside(false);
             dialog.show();
         }
 
