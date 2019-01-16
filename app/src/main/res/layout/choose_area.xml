@@ -8,14 +8,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary">
+        android:background="@color/select_city_title_color">
 
         <TextView
             android:id="@+id/title_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textColor="#fff"
+            android:textColor="@color/text_color"
             android:textSize="20sp"/>
 
         <ImageView
@@ -27,6 +27,40 @@
             android:layout_centerVertical="true"
             android:layout_alignParentStart="true"
             android:src="@mipmap/back"/>
+
+        <TextView
+            android:id="@+id/local_city_name"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:layout_alignParentEnd="true"
+            android:textSize="16sp"
+            android:textColor="@color/text_color"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="16dp"
+            android:visibility="gone"
+            android:gravity="center"/>
+
+        <ImageView
+            android:id="@+id/local_city_icon"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_toStartOf="@id/local_city_name"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+            android:src="@mipmap/get_local_city"
+            android:visibility="gone"/>
+
+    <pl.droidsonroids.gif.GifImageView
+        android:id="@+id/local_city_refresh"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:layout_marginEnd="12dp"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/refresh_gif"/>
 
     </RelativeLayout>
 

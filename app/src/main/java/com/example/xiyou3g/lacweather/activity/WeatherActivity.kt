@@ -59,7 +59,6 @@ class WeatherActivity: AppCompatActivity(){
         window.statusBarColor = Color.TRANSPARENT
         setContentView(R.layout.activity_weather)
         initWight()
-
         val nav_change = intent.getIntExtra("nav_change",-1)
         LogUtil.e("nav_change",nav_change.toString())
         if(nav_change == 1){

@@ -12,6 +12,7 @@ import com.example.xiyou3g.lacweather.R
 import com.example.xiyou3g.lacweather.activity.LoadFragmentActivity
 import com.example.xiyou3g.lacweather.activity.MainActivity
 import com.example.xiyou3g.lacweather.activity.WeatherActivity
+import com.example.xiyou3g.lacweather.asynctask.GetLocalCityAsyncTask
 import com.example.xiyou3g.lacweather.db.City
 import com.example.xiyou3g.lacweather.db.County
 import com.example.xiyou3g.lacweather.db.Province
@@ -22,6 +23,7 @@ import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Response
 import org.litepal.crud.DataSupport
+import pl.droidsonroids.gif.GifImageView
 import java.io.IOException
 import java.util.*
 
@@ -32,8 +34,15 @@ import java.util.*
 
 class ChooseAreaFragment : Fragment(), View.OnClickListener {
     override fun onClick(v: View?) {
-        if (backListener != null) {
-            backListener!!.chooseBack()
+        when(v!!.id) {
+            R.id.back_button -> {
+                if (backListener != null) {
+                    backListener!!.chooseBack()
+                }
+            }
+            R.id.local_city_name -> {
+                LogUtil.e(TAG, "onClick" + localCityName!!.text)
+            }
         }
     }
 
@@ -49,6 +58,7 @@ class ChooseAreaFragment : Fragment(), View.OnClickListener {
     private var titleText: TextView? = null
     private var backButton: ImageView? = null
     private var listView: ListView? = null
+    private var localCityName: TextView? = null
     private var adapter: ArrayAdapter<String>? = null
     private val dataList = ArrayList<String>()
     val TAG = "ChooseAreaFragment"
@@ -70,12 +80,21 @@ class ChooseAreaFragment : Fragment(), View.OnClickListener {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater!!.inflate(R.layout.choose_area, container, false)
+        initWight(view)
+        return view
+    }
+
+    private fun initWight(view: View) {
         titleText = view.findViewById(R.id.title_text) as TextView
         backButton = view.findViewById(R.id.back_button) as ImageView
         listView = view.findViewById(R.id.list_view) as ListView
         adapter = ArrayAdapter(context, android.R.layout.simple_expandable_list_item_1, dataList)
         listView!!.adapter = adapter
-        return view
+        val localCityIcon = view.findViewById(R.id.local_city_icon) as ImageView
+        localCityName = view.findViewById(R.id.local_city_name) as TextView
+        localCityName!!.setOnClickListener(this)
+        val localCityRefresh = view.findViewById(R.id.local_city_refresh) as GifImageView
+        GetLocalCityAsyncTask(localCityIcon, localCityName, localCityRefresh).execute()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
