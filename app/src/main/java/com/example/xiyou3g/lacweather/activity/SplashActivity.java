@@ -17,6 +17,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.example.xiyou3g.lacweather.R;
 import com.example.xiyou3g.lacweather.util.HttpUtil;
 import com.example.xiyou3g.lacweather.util.ThreadPoolUtils;
@@ -62,32 +65,44 @@ public class SplashActivity extends AppCompatActivity{
             if (activity != null && view != null && textViews != null) {
                 final SplashActivity a = (SplashActivity) activity.get();
                 View v = view.get();
-                TextView[] tvs = textViews.get();
+                final TextView[] tvs = textViews.get();
                 switch (msg.what) {
                     case UPDATE_SPLASH_BACK:
                         if (v instanceof ImageView) {
                             Log.e(TAG, "handler");
                             String url = (String) msg.obj;
                             Log.e(TAG, url);
-                            Glide.with(a).load(url).into((ImageView) v);
-                        }
-                        a.setAlphaAnimByView(tvs[0], 0.0f, 1.0f, 0, a.DURATION);
-                        a.setAlphaAnimByView(tvs[1], 0.0f, 1.0f, 300, a.DURATION);
-                        a.setAlphaAnimByView(tvs[2], 0.0f, 1.0f, 600, a.DURATION);
-                        a.setAlphaAnimByView(tvs[3], 0.0f, 1.0f, 900, a.DURATION);
-                        a.setAlphaAnimByView(tvs[4], 0.0f, 1.0f, 1200, a.DURATION);
-                        a.currentTime = (int)System.currentTimeMillis() - a.currentTime;
-                        if (a.currentTime >= a.START_TIME) {
-                            a.startActivity(new Intent(a, MainActivity.class));
-                            a.finish();
-                        } else {
-                            postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    a.startActivity(new Intent(a, MainActivity.class));
-                                    a.finish();
-                                }
-                            }, a.START_TIME);
+                            Glide.with(a).load(url).listener(new RequestListener<String, GlideDrawable>() {
+                                        @Override
+                                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+                                            e.printStackTrace();
+                                            return false;
+                                        }
+
+                                        @Override
+                                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+                                            a.setAlphaAnimByView(tvs[0], 0.0f, 1.0f, 0, a.DURATION);
+                                            a.setAlphaAnimByView(tvs[1], 0.0f, 1.0f, 300, a.DURATION);
+                                            a.setAlphaAnimByView(tvs[2], 0.0f, 1.0f, 600, a.DURATION);
+                                            a.setAlphaAnimByView(tvs[3], 0.0f, 1.0f, 900, a.DURATION);
+                                            a.setAlphaAnimByView(tvs[4], 0.0f, 1.0f, 1200, a.DURATION);
+                                            a.currentTime = (int)System.currentTimeMillis() - a.currentTime;
+                                            if (a.currentTime >= a.START_TIME) {
+                                                a.startActivity(new Intent(a, MainActivity.class));
+                                                a.finish();
+                                            } else {
+                                                postDelayed(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        a.startActivity(new Intent(a, MainActivity.class));
+                                                        a.finish();
+                                                    }
+                                                }, a.START_TIME);
+                                            }
+                                            return false;
+                                        }
+                                    })
+                                    .into((ImageView) v);
                         }
                         break;
                     default:

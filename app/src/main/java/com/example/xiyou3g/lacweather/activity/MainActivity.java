@@ -183,7 +183,9 @@ public class MainActivity extends AppCompatActivity
                 editor.apply();
                 // 将自定义字符串数据进行处理、解析;
                 handleCountyMessage(s);
-                dialog.dismiss();
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+                }
             }
         }
 
@@ -202,6 +204,7 @@ public class MainActivity extends AppCompatActivity
             dialog.setTitle(title);
             dialog.setMessage(content);
             dialog.setCancelable(false);
+            dialog.setCanceledOnTouchOutside(false);
             dialog.show();
         }
 

@@ -11,13 +11,15 @@ import android.widget.*
 import com.example.xiyou3g.lacweather.R
 import com.example.xiyou3g.lacweather.activity.LoadFragmentActivity
 import com.example.xiyou3g.lacweather.activity.MainActivity
+import com.example.xiyou3g.lacweather.activity.MainActivity.countyBeanList
 import com.example.xiyou3g.lacweather.activity.WeatherActivity
 import com.example.xiyou3g.lacweather.asynctask.GetLocalCityAsyncTask
 import com.example.xiyou3g.lacweather.db.City
 import com.example.xiyou3g.lacweather.db.County
 import com.example.xiyou3g.lacweather.db.Province
 import com.example.xiyou3g.lacweather.util.HttpUtil
-import com.example.xiyou3g.lacweather.util.LogUtil
+import com.example.xiyou3g.lacweather.util.ResourceUitls
+import com.example.xiyou3g.lacweather.util.ThreadPoolUtils
 import com.example.xiyou3g.lacweather.util.Utility
 import okhttp3.Call
 import okhttp3.Callback
@@ -41,7 +43,26 @@ class ChooseAreaFragment : Fragment(), View.OnClickListener {
                 }
             }
             R.id.local_city_name -> {
-                LogUtil.e(TAG, "onClick" + localCityName!!.text)
+                ThreadPoolUtils.getInstance().excute({
+                    val cityName = localCityName!!.text
+                    var weather_id: String? = null
+                    for (countyBean in countyBeanList){
+                        if (countyBean!!.countyName == cityName) {
+                            weather_id = countyBean.weatherId
+                        }
+                    }
+                    if (weather_id != null) {
+                        activity.runOnUiThread {
+                            setResultToWeatherActivity(weather_id)
+                        }
+                    } else {
+                        activity.runOnUiThread {
+                            Toast.makeText(activity,
+                                    ResourceUitls.getStringById(activity, R.string.find_error_toast),
+                                    Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                })
             }
         }
     }
@@ -109,22 +130,25 @@ class ChooseAreaFragment : Fragment(), View.OnClickListener {
                 queryCounties()
             }else if(currentLevel == LEVEL_COUNTY){
                 val stringId = countyList!![position].weatherId
-                if(activity is MainActivity){
-                    val intent = Intent(activity, WeatherActivity::class.java)
-                    intent.putExtra("weather_id", stringId)
-                    startActivity(intent)
-                    activity.finish()
-                } else if (activity is LoadFragmentActivity) {
-//                    val intent = Intent(activity, WeatherActivity::class.java)
-                    val intent = Intent()
-                    intent.putExtra("weather_id", stringId)
-                    intent.putExtra("nav_change", 1)
-                    activity.setResult(1, intent)
-                    activity.finish()
-                }
+                setResultToWeatherActivity(stringId)
             }
         }
         backButton!!.setOnClickListener(this)
+    }
+
+    private fun setResultToWeatherActivity(weatherId: String?) {
+        if(activity is MainActivity){
+            val intent = Intent(activity, WeatherActivity::class.java)
+            intent.putExtra("weather_id", weatherId)
+            startActivity(intent)
+            activity.finish()
+        } else if (activity is LoadFragmentActivity) {
+            val intent = Intent()
+            intent.putExtra("weather_id", weatherId)
+            intent.putExtra("nav_change", 1)
+            activity.setResult(1, intent)
+            activity.finish()
+        }
     }
 
     fun backToLast() {
