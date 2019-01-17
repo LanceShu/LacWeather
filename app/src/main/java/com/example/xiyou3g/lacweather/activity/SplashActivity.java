@@ -12,9 +12,12 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.GlideDrawable;
@@ -22,10 +25,12 @@ import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.example.xiyou3g.lacweather.R;
 import com.example.xiyou3g.lacweather.util.HttpUtil;
+import com.example.xiyou3g.lacweather.util.LogUtil;
 import com.example.xiyou3g.lacweather.util.ThreadPoolUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.net.SocketTimeoutException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -115,9 +120,8 @@ public class SplashActivity extends AppCompatActivity{
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        View decorview = getWindow().getDecorView();
-        decorview.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
-        getWindow().setStatusBarColor(Color.TRANSPARENT);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.splash_layout);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         currentTime = (int) System.currentTimeMillis();
@@ -154,13 +158,18 @@ public class SplashActivity extends AppCompatActivity{
         HttpUtil.INSTANCE.sendOkHttpRequest(image_url, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
-                String url = preferences.getString("splash_back", null);
-                if (url != null) {
-                    Message message = Message.obtain();
-                    message.obj = url;
-                    message.what = UPDATE_SPLASH_BACK;
-                    splashHandler.sendMessage(message);
+                LogUtil.INSTANCE.e(TAG, e.getCause().toString());
+                if (e.getCause().equals(SocketTimeoutException.class)) {
+                    if (!getInforFromSharedPreference()) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(SplashActivity.this, "请检查网络连接", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                } else {
+                    getInforFromSharedPreference();
                 }
             }
 
@@ -178,6 +187,19 @@ public class SplashActivity extends AppCompatActivity{
                 }
             }
         });
+    }
+
+    private boolean getInforFromSharedPreference(){
+        boolean flag = false;
+        String url = preferences.getString("splash_back", null);
+        if (url != null) {
+            flag = true;
+            Message message = Message.obtain();
+            message.obj = url;
+            message.what = UPDATE_SPLASH_BACK;
+            splashHandler.sendMessage(message);
+        }
+        return flag;
     }
 
     @Override

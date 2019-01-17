@@ -3,7 +3,8 @@ package com.example.xiyou3g.lacweather.util
 import android.util.Log
 
 /**
- * Created by Lance on 2017/8/15.
+ * Created by Lance
+ * on 2017/8/15.
  */
 
 object LogUtil {

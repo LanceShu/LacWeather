@@ -2,6 +2,7 @@ package com.example.xiyou3g.lacweather.util
 
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by Lance
@@ -10,7 +11,10 @@ import okhttp3.Request
 
 object HttpUtil{
     fun sendOkHttpRequest(address : String, callback: okhttp3.Callback){
-        val client = OkHttpClient()
+        val client = OkHttpClient.Builder()
+                .connectTimeout(3, TimeUnit.SECONDS)
+                .readTimeout(3, TimeUnit.SECONDS)
+                .build()
         val request = Request.Builder()
                 .url(address)
                 .build()

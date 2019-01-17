@@ -3,7 +3,10 @@ package com.example.xiyou3g.lacweather.activity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.graphics.Color
+import android.os.AsyncTask
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
 import android.preference.PreferenceManager
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -31,12 +34,14 @@ import kotlinx.android.synthetic.main.nav_header.view.*
 import kotlinx.android.synthetic.main.now.*
 import kotlinx.android.synthetic.main.suggestion.*
 import kotlinx.android.synthetic.main.title_bar.*
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.Response
+import okhttp3.*
 import org.jetbrains.anko.startActivityForResult
+import org.json.JSONException
+import org.json.JSONObject
 import java.io.IOException
+import java.lang.ref.WeakReference
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Created by
@@ -121,9 +126,7 @@ class WeatherActivity: AppCompatActivity(){
 
     /*根据天气id请求城市天气信息*/
     fun requestWeather(weatherId: String?) {
-
         val weatherUrl = "http://guolin.tech/api/weather?cityid=$weatherId&key=710e976d83e54ad9b139b42267ba4ce7"
-
         HttpUtil.sendOkHttpRequest(weatherUrl,object : Callback{
             override fun onFailure(call: Call?, e: IOException?) {
                 runOnUiThread({
@@ -183,8 +186,8 @@ class WeatherActivity: AppCompatActivity(){
                 forecastLayout!!.addView(view)
             }
             if(weather.aqi != null){
-                aqi_text.text = weather!!.aqi!!.city!!.aqi
-                pm25_text.text = weather!!.aqi!!.city!!.pm25
+                aqi_text.text = weather.aqi!!.city!!.aqi
+                pm25_text.text = weather.aqi!!.city!!.pm25
             }
             val comfort = "舒适度：\n"+weather.suggestion!!.comfort!!.info
             val carWash = "洗车指数：\n"+weather.suggestion!!.carWash!!.info
@@ -217,25 +220,29 @@ class WeatherActivity: AppCompatActivity(){
                 drawerLayout!!.openDrawer(GravityCompat.START)
             }
         })
-
+        // 左边抽屉的选项；
         navView!!.setNavigationItemSelectedListener(object : NavigationView.OnNavigationItemSelectedListener{
             override fun onNavigationItemSelected(item: MenuItem): Boolean {
                 when(item.itemId){
+                    // 我的城市；
                     R.id.nav_my_city -> {
                         navView!!.setCheckedItem(R.id.nav_my_city)
                         drawerLayout!!.closeDrawers()
-                        showWeatehrInfo(weather!!)
+                        getLocalCityWeatehrInfor()
                     }
+                    // 切换城市；
                     R.id.nav_change_city -> {
                         navView!!.setCheckedItem(R.id.nav_change_city)
                         drawerLayout!!.closeDrawer(GravityCompat.START)
                         startLoadFragmentActivity("change_city")
                     }
+                    // 查找城市；
                     R.id.nav_find_city -> {
                         navView!!.setCheckedItem(R.id.nav_find_city)
                         drawerLayout!!.closeDrawers()
                         startLoadFragmentActivity("find_city")
                     }
+                    // 关于软件；
                     R.id.nav_about -> {
                         navView!!.setCheckedItem(R.id.nav_about)
                         drawerLayout!!.closeDrawers()
@@ -244,6 +251,72 @@ class WeatherActivity: AppCompatActivity(){
                 return true
             }
         })
+    }
+
+    // 我的城市->获取当地城市天气信息；
+    private fun getLocalCityWeatehrInfor() {
+        weatherLayout!!.visibility = View.INVISIBLE
+        swipeRefresh!!.isRefreshing = true
+        GetLocalCityWeatherAsyncTask(this).execute()
+    }
+
+    // 获取我的城市的天气信息；
+    class GetLocalCityWeatherAsyncTask() : AsyncTask<Void, Void, String>() {
+        private val url = "https://api.map.baidu.com/location/ip?ak=MIKZkVGGXad6Y2FBaNQUISHSwN9trsol"
+        private val TAG = "GetLocalCityWeatherAsyncTask"
+        private var wa: WeakReference<WeatherActivity>? = null
+
+        constructor(activity: WeatherActivity): this() {
+            wa = WeakReference(activity)
+        }
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+        }
+
+        override fun doInBackground(vararg params: Void?): String {
+            val client = OkHttpClient.Builder()
+                    .connectTimeout(3, TimeUnit.SECONDS)
+                    .build()
+            val sb = StringBuilder()
+            var result = ""
+            val request = Request.Builder()
+                    .url(url)
+                    .build()
+            try {
+                val response = client.newCall(request).execute()
+                val resp = response.body()!!.string()
+                val respJson = JSONObject(resp)
+                val contentJson = respJson.getJSONObject("content")
+                val addressJson = contentJson.getJSONObject("address_detail")
+                val province = addressJson.getString("province")
+                val city = addressJson.getString("city")
+                LogUtil.e(TAG, province + city)
+                sb.append(city.substring(0, city.length - 1))
+                for (countyBean in MainActivity.countyBeanList) {
+                    if (countyBean.countyName == sb.toString()) {
+                        result = countyBean.weatherId
+                    }
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+            return result
+        }
+
+        override fun onPostExecute(result: String?) {
+            super.onPostExecute(result)
+            if (wa != null) {
+                val activity = wa!!.get()
+                if (result != "") {
+                    activity!!.requestWeather(result)
+                } else {
+                    Toast.makeText(activity, R.string.find_error_toast, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
     }
 
     private fun startLoadFragmentActivity(type: String) {
@@ -272,7 +345,7 @@ class WeatherActivity: AppCompatActivity(){
     private var isExit: Boolean? = false
     private fun exitClick() {
         val timer: Timer
-        if (isExit === false) {
+        if (isExit == false) {
             isExit = true
             Toast.makeText(this@WeatherActivity,"再按一次退出程序",Toast.LENGTH_SHORT).show()
             timer = Timer()
