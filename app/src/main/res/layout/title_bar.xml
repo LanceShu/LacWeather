@@ -7,11 +7,11 @@
         android:id="@+id/nav_button"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:padding="9dp"
+        android:padding="7dp"
         android:layout_marginStart="16dp"
         android:layout_alignParentStart="true"
         android:layout_centerVertical="true"
-        android:src="@mipmap/back"/>
+        android:src="@mipmap/title_back"/>
 
     <TextView
         android:id="@+id/title_city"
@@ -20,6 +20,17 @@
         android:layout_centerInParent="true"
         android:textColor="#fff"
         android:textSize="20sp"/>
+
+    <ImageView
+        android:id="@+id/nav_add_care"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:padding="8dp"
+        android:layout_toStartOf="@id/title_city"
+        android:layout_marginEnd="6dp"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/add_care"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/title_update_time"
@@ -30,5 +41,16 @@
         android:layout_centerVertical="true"
         android:textColor="#fff"
         android:textSize="12sp"/>
+
+    <ImageView
+        android:id="@+id/nav_share"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:padding="7dp"
+        android:layout_marginEnd="16dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/share"
+        android:visibility="gone"/>
 
 </RelativeLayout>

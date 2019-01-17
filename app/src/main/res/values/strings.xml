@@ -12,6 +12,7 @@
     <string name="main_dialog_content" >正在加载城市列表…</string>
 
     <string name="menu_local_city" >我的城市</string>
+    <string name="menu_care" >特别关心</string>
     <string name="menu_change_city" >切换城市</string>
     <string name="menu_find_city" >查找城市</string>
     <string name="menu_about" >关于软件</string>

@@ -4,7 +4,7 @@
     <color name="colorPrimaryDark">#2A80B9</color>
     <color name="colorAccent">#2775a9</color>
     <color name="text_color">#FFF</color>
-    <color name="edit_back_color">#181818</color>
+    <color name="edit_back_color">#0a0a0a</color>
     <color name="edit_hint_color">#706f6f</color>
     <color name="select_city_title_color">#2A80B9</color>
 </resources>

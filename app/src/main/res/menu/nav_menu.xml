@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
     <group android:checkableBehavior="single">
 
         <item android:id="@+id/nav_my_city"
-            android:icon="@mipmap/local_city"
+            android:icon="@mipmap/nav_local_city"
             android:title="@string/menu_local_city" />
 
+        <item android:id="@+id/nav_care"
+            android:icon="@mipmap/nav_care"
+            android:title="@string/menu_care" />
+
         <item android:id="@+id/nav_change_city"
-            android:icon="@mipmap/change_city"
+            android:icon="@mipmap/nav_change_city"
             android:title="@string/menu_change_city" />
 
         <item android:id="@+id/nav_find_city"
-            android:icon="@mipmap/find_city"
+            android:icon="@mipmap/nav_find_city"
             android:title="@string/menu_find_city" />
 
         <item android:id="@+id/nav_about"
-            android:icon="@mipmap/about"
+            android:icon="@mipmap/nav_about"
             android:title="@string/menu_about" />
 
 

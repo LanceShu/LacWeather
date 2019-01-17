@@ -34,13 +34,13 @@ public class LoadFragmentActivity extends AppCompatActivity
 
     private void initWight() {
         switch (getIntent().getStringExtra("load_fragment")) {
-            case "change_city":
+            case "building_icon":
                 chooseAreaFragment = new ChooseAreaFragment();
                 chooseAreaFragment.setBackListener(this);
                 addFragment(layoutId, chooseAreaFragment);
                 currentFragment = chooseAreaFragment;
                 break;
-            case "find_city":
+            case "nav_find_city":
                 FindCityFragment findCityFragment = new FindCityFragment();
                 addFragment(layoutId, findCityFragment);
                 currentFragment = findCityFragment;

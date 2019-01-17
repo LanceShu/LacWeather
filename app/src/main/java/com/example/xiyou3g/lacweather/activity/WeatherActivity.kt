@@ -5,8 +5,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
-import android.os.Parcel
-import android.os.Parcelable
 import android.preference.PreferenceManager
 import android.support.design.widget.NavigationView
 import android.support.v4.view.GravityCompat
@@ -30,12 +28,13 @@ import com.example.xiyou3g.lacweather.util.LogUtil
 import com.example.xiyou3g.lacweather.util.Utility
 import kotlinx.android.synthetic.main.activity_weather.*
 import kotlinx.android.synthetic.main.aqi.*
+import kotlinx.android.synthetic.main.choose_area.*
+import kotlinx.android.synthetic.main.forecast_item.*
 import kotlinx.android.synthetic.main.nav_header.view.*
 import kotlinx.android.synthetic.main.now.*
 import kotlinx.android.synthetic.main.suggestion.*
 import kotlinx.android.synthetic.main.title_bar.*
 import okhttp3.*
-import org.jetbrains.anko.startActivityForResult
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -138,7 +137,7 @@ class WeatherActivity: AppCompatActivity(){
             override fun onResponse(call: Call?, response: Response) {
                 val responseText = response.body()?.string()
                 LogUtil.e("responseText", responseText!!)
-                weather = Utility.handleWeatherResponse(responseText!!)
+                weather = Utility.handleWeatherResponse(responseText)
                 runOnUiThread( {
                     if(weather != null && "ok".equals(weather!!.status)){
                         val editor = PreferenceManager.getDefaultSharedPreferences(this@WeatherActivity).edit()
@@ -164,7 +163,8 @@ class WeatherActivity: AppCompatActivity(){
             val degree = weather.now!!.temperature + "℃"
             val weatherInfo = weather.now!!.more!!.info
             title_city.text = cityName
-            title_update_time.text = "更新于 " + updateTime
+//            title_update_time.text = "更新于 " + updateTime
+            now_update_time.text = "更新于 " + updateTime
             degree_text.text = degree
             weather_info_text.text = weatherInfo
 
@@ -173,9 +173,12 @@ class WeatherActivity: AppCompatActivity(){
             navView!!.getHeaderView(0).header_info.text = weatherInfo
 
             forecastLayout!!.removeAllViews()
+            var i = 0
             for(forecast in weather.forecastList!!){
+                i ++
                 val view = LayoutInflater.from(this).inflate(R.layout.forecast_item,forecastLayout,false)
                 val dateText = view.findViewById(R.id.date_text) as TextView
+                val timeText = view.findViewById(R.id.time_text) as TextView
                 val infoText = view.findViewById(R.id.info_text) as TextView
                 val maxText = view.findViewById(R.id.max_text) as TextView
                 val minText = view.findViewById(R.id.min_text) as TextView
@@ -183,6 +186,11 @@ class WeatherActivity: AppCompatActivity(){
                 infoText.text = forecast.more!!.inf
                 maxText.text = forecast.temperature!!.max + "℃"
                 minText.text = forecast.temperature!!.min + "℃"
+                when(i) {
+                    1 -> timeText.text = "今天"
+                    2 -> timeText.text = "明天"
+                    3 -> timeText.text = "后天"
+                }
                 forecastLayout!!.addView(view)
             }
             if(weather.aqi != null){
@@ -207,6 +215,8 @@ class WeatherActivity: AppCompatActivity(){
 
     @SuppressLint("ResourceAsColor")
     private fun initWight(){
+        nav_add_care.visibility = View.VISIBLE
+        nav_share.visibility = View.VISIBLE
         weatherLayout = findViewById(R.id.weather_layout) as ScrollView
         forecastLayout = findViewById(R.id.forecast_layout) as LinearLayout
         swipeRefresh = findViewById(R.id.swipe_refresh) as SwipeRefreshLayout
@@ -234,13 +244,13 @@ class WeatherActivity: AppCompatActivity(){
                     R.id.nav_change_city -> {
                         navView!!.setCheckedItem(R.id.nav_change_city)
                         drawerLayout!!.closeDrawer(GravityCompat.START)
-                        startLoadFragmentActivity("change_city")
+                        startLoadFragmentActivity("building_icon")
                     }
                     // 查找城市；
                     R.id.nav_find_city -> {
                         navView!!.setCheckedItem(R.id.nav_find_city)
                         drawerLayout!!.closeDrawers()
-                        startLoadFragmentActivity("find_city")
+                        startLoadFragmentActivity("nav_find_city")
                     }
                     // 关于软件；
                     R.id.nav_about -> {
