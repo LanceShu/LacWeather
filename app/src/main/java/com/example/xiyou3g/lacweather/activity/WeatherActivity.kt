@@ -25,10 +25,11 @@ import com.example.xiyou3g.lacweather.gson.Weather
 import com.example.xiyou3g.lacweather.service.AutoUpdateService
 import com.example.xiyou3g.lacweather.util.HttpUtil
 import com.example.xiyou3g.lacweather.util.LogUtil
+import com.example.xiyou3g.lacweather.util.ResourceUitls
 import com.example.xiyou3g.lacweather.util.Utility
 import kotlinx.android.synthetic.main.activity_weather.*
 import kotlinx.android.synthetic.main.aqi.*
-import kotlinx.android.synthetic.main.choose_area.*
+import kotlinx.android.synthetic.main.choose_area_fragment.*
 import kotlinx.android.synthetic.main.forecast_item.*
 import kotlinx.android.synthetic.main.nav_header.view.*
 import kotlinx.android.synthetic.main.now.*
@@ -47,7 +48,34 @@ import java.util.concurrent.TimeUnit
  * Lance on 2017/8/17.
  */
 
-class WeatherActivity: AppCompatActivity(){
+class WeatherActivity: AppCompatActivity(), View.OnClickListener{
+    override fun onClick(v: View?) {
+        when(v!!.id) {
+            R.id.nav_add_care -> {
+                LogUtil.e(TAG, mWeatherId!!)
+                addToSave(mWeatherId!!)
+                Toast.makeText(this,
+                        ResourceUitls.getStringById(this, R.string.success_add),
+                        Toast.LENGTH_SHORT).show()
+                v.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun addToSave(mWeatherId: String) {
+        val preference = PreferenceManager.getDefaultSharedPreferences(this)
+        val stringBuffer = StringBuffer()
+        stringBuffer.append(preference.getString("care_cities", ""))
+        if (stringBuffer.isEmpty()) {
+            stringBuffer.append(mWeatherId)
+        } else {
+            stringBuffer.append("&$mWeatherId")
+        }
+        val editor = preference.edit()
+        editor.putString("care_cities", stringBuffer.toString())
+        editor.apply()
+    }
+
     private var weatherLayout: ScrollView? = null
     private var forecastLayout: LinearLayout?  = null
     private var navView: NavigationView? = null
@@ -55,6 +83,7 @@ class WeatherActivity: AppCompatActivity(){
     private var weather: Weather? = null
     private var drawerLayout: DrawerLayout? = null
     private var swipeRefresh: SwipeRefreshLayout? = null
+    private val TAG = "WeatherActivity"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -93,13 +122,21 @@ class WeatherActivity: AppCompatActivity(){
                 loadBingPic()
             }
         }
-
         swipeRefresh!!.setOnRefreshListener(object : SwipeRefreshLayout.OnRefreshListener{
             override fun onRefresh() {
                 LogUtil.e("weatherId",mWeatherId.toString())
                 requestWeather(mWeatherId)
             }
         })
+    }
+
+    override fun onStart() {
+        super.onStart()
+        if (isVisiableToNavAddBtn(mWeatherId)) {
+            nav_add_care.visibility = View.VISIBLE
+        } else {
+            nav_add_care.visibility = View.GONE
+        }
     }
 
     /*加载必应图片*/
@@ -125,8 +162,9 @@ class WeatherActivity: AppCompatActivity(){
 
     /*根据天气id请求城市天气信息*/
     fun requestWeather(weatherId: String?) {
+        mWeatherId = weatherId
         val weatherUrl = "http://guolin.tech/api/weather?cityid=$weatherId&key=710e976d83e54ad9b139b42267ba4ce7"
-        HttpUtil.sendOkHttpRequest(weatherUrl,object : Callback{
+        HttpUtil.sendOkHttpRequest(weatherUrl, object : Callback{
             override fun onFailure(call: Call?, e: IOException?) {
                 runOnUiThread({
                     Toast.makeText(this@WeatherActivity,"获取天气信息失败",Toast.LENGTH_SHORT).show()
@@ -158,11 +196,17 @@ class WeatherActivity: AppCompatActivity(){
     @SuppressLint("SetTextI18n")
     private fun showWeatehrInfo(weather: Weather) {
         if(weather != null && weather.status.equals("ok")){
+            if (isVisiableToNavAddBtn(mWeatherId)) {
+                nav_add_care.visibility = View.VISIBLE
+            } else {
+                nav_add_care.visibility = View.GONE
+            }
             val cityName = weather.basic!!.cityName
             val updateTime = weather.basic!!.update!!.updateTime!!.split(" ")[1]
             val degree = weather.now!!.temperature + "℃"
             val weatherInfo = weather.now!!.more!!.info
             title_city.text = cityName
+            nav_add_care.setOnClickListener(this@WeatherActivity)
 //            title_update_time.text = "更新于 " + updateTime
             now_update_time.text = "更新于 " + updateTime
             degree_text.text = degree
@@ -215,7 +259,6 @@ class WeatherActivity: AppCompatActivity(){
 
     @SuppressLint("ResourceAsColor")
     private fun initWight(){
-        nav_add_care.visibility = View.VISIBLE
         nav_share.visibility = View.VISIBLE
         weatherLayout = findViewById(R.id.weather_layout) as ScrollView
         forecastLayout = findViewById(R.id.forecast_layout) as LinearLayout
@@ -240,11 +283,17 @@ class WeatherActivity: AppCompatActivity(){
                         drawerLayout!!.closeDrawers()
                         getLocalCityWeatehrInfor()
                     }
+                    // 特别关心；
+                    R.id.nav_care -> {
+                        navView!!.setCheckedItem(R.id.nav_care)
+                        drawerLayout!!.closeDrawers()
+                        startLoadFragmentActivity("nav_care")
+                    }
                     // 切换城市；
                     R.id.nav_change_city -> {
                         navView!!.setCheckedItem(R.id.nav_change_city)
                         drawerLayout!!.closeDrawer(GravityCompat.START)
-                        startLoadFragmentActivity("building_icon")
+                        startLoadFragmentActivity("nav_change_city")
                     }
                     // 查找城市；
                     R.id.nav_find_city -> {
@@ -261,6 +310,21 @@ class WeatherActivity: AppCompatActivity(){
                 return true
             }
         })
+    }
+
+    private fun isVisiableToNavAddBtn(mWeatherId: String?): Boolean {
+        var isVisiable = true
+        val preference = PreferenceManager.getDefaultSharedPreferences(this)
+        val weatherIds = preference.getString("care_cities", null)
+        if (weatherIds != null) {
+            val weatherId = weatherIds.split("&")
+            for (wid in weatherId) {
+                if (wid == mWeatherId) {
+                    isVisiable = false
+                }
+            }
+        }
+        return isVisiable
     }
 
     // 我的城市->获取当地城市天气信息；
@@ -337,7 +401,8 @@ class WeatherActivity: AppCompatActivity(){
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 0 && (resultCode == 1 || resultCode == 2)) {
+        if (requestCode == 0 &&
+                (resultCode == 1 || resultCode == 2 || resultCode == 3)) {
             weatherLayout!!.visibility = View.INVISIBLE
             swipeRefresh!!.isRefreshing = true
             mWeatherId = data!!.getStringExtra("weather_id")

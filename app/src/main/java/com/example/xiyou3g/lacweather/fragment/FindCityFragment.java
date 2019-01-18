@@ -1,6 +1,5 @@
 package com.example.xiyou3g.lacweather.fragment;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,9 +18,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.xiyou3g.lacweather.R;
-import com.example.xiyou3g.lacweather.activity.WeatherActivity;
 import com.example.xiyou3g.lacweather.asynctask.FindCityAsyncTask;
-import com.example.xiyou3g.lacweather.util.LogUtil;
 import com.example.xiyou3g.lacweather.util.ResourceUitls;
 
 import java.util.ArrayList;
@@ -80,7 +77,6 @@ public class FindCityFragment extends Fragment implements View.OnClickListener {
         cityListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                Intent intent = new Intent(getContext(), WeatherActivity.class);
                 Intent intent = new Intent();
                 intent.putExtra("weather_id", weatherIdList.get(position));
                 intent.putExtra("nav_change", 1);

@@ -3,7 +3,8 @@ package com.example.xiyou3g.lacweather.gson
 import com.google.gson.annotations.SerializedName
 
 /**
- * Created by Lance on 2017/8/17.
+ * Created by Lance
+ * on 2017/8/17.
  */
 
 class Weather{

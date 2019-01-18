@@ -20,4 +20,5 @@
     <string name="find_edit" >请输入所需查找的城市</string>
     <string name="find_error_content" >无搜索结果</string>
     <string name="find_error_toast" >未查询到该城市的天气信息</string>
+    <string name="success_add" >已添加至特别关心</string>
 </resources>

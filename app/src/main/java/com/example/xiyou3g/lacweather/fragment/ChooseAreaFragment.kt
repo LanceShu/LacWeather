@@ -100,7 +100,7 @@ class ChooseAreaFragment : Fragment(), View.OnClickListener {
     private var backListener: OnChooseSetBackListener? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater!!.inflate(R.layout.choose_area, container, false)
+        val view = inflater!!.inflate(R.layout.choose_area_fragment, container, false)
         initWight(view)
         return view
     }

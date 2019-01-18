@@ -159,18 +159,15 @@ public class SplashActivity extends AppCompatActivity{
             @Override
             public void onFailure(Call call, IOException e) {
                 LogUtil.INSTANCE.e(TAG, e.getCause().toString());
-                if (e.getCause().equals(SocketTimeoutException.class)) {
-                    if (!getInforFromSharedPreference()) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(SplashActivity.this, "请检查网络连接", Toast.LENGTH_SHORT).show();
-                            }
-                        });
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(SplashActivity.this,
+                                "请检查网络连接",
+                                Toast.LENGTH_SHORT).show();
+                        getInforFromSharedPreference();
                     }
-                } else {
-                    getInforFromSharedPreference();
-                }
+                });
             }
 
             @Override
