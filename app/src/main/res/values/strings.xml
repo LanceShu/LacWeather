@@ -21,4 +21,6 @@
     <string name="find_error_content" >无搜索结果</string>
     <string name="find_error_toast" >未查询到该城市的天气信息</string>
     <string name="success_add" >已添加至特别关心</string>
+
+    <string name="care_no_city_list" >暂无城市哦o(╥﹏╥)o</string>
 </resources>

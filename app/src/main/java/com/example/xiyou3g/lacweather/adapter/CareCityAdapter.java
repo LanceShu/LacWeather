@@ -26,13 +26,16 @@ public class CareCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private List<CareBean> careBeanList;
     private Activity activity;
     private SharedPreferences preferences;
+    private TextView noCityText;
 
     public CareCityAdapter(List<CareBean> careBeanList,
                            Activity activity,
-                           SharedPreferences preferences) {
+                           SharedPreferences preferences,
+                           TextView noCityText) {
         this.careBeanList = careBeanList;
         this.activity = activity;
         this.preferences = preferences;
+        this.noCityText = noCityText;
     }
 
     @Override
@@ -86,6 +89,7 @@ public class CareCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public int getItemCount() {
+        noCityText.setVisibility(careBeanList.size() > 0 ? View.GONE : View.VISIBLE);
         return careBeanList.size();
     }
 

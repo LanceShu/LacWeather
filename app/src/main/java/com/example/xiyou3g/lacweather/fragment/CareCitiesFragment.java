@@ -65,13 +65,17 @@ public class CareCitiesFragment extends Fragment implements View.OnClickListener
         // 设置返回按钮;
         ImageView backBtn = (ImageView) view.findViewById(R.id.nav_button);
         backBtn.setOnClickListener(this);
+        // 初始化文本；
+        TextView noCityText = (TextView) view.findViewById(R.id.care_no_city);
+        noCityText.setVisibility(View.VISIBLE);
+        // 初始化城市列表控件；
         RecyclerView citiesView = (RecyclerView) view.findViewById(R.id.care_cities_list);
         citiesView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         manager.setOrientation(LinearLayoutManager.VERTICAL);
         citiesView.setLayoutManager(manager);
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-        careCityAdapter = new CareCityAdapter(careCitiesList, getActivity(), preferences);
+        careCityAdapter = new CareCityAdapter(careCitiesList, getActivity(), preferences, noCityText);
         citiesView.setAdapter(careCityAdapter);
     }
 
