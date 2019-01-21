@@ -20,6 +20,7 @@ import android.widget.Toast;
 import com.example.xiyou3g.lacweather.R;
 import com.example.xiyou3g.lacweather.db.CountyBean;
 import com.example.xiyou3g.lacweather.fragment.ChooseAreaFragment;
+import com.example.xiyou3g.lacweather.util.IconUtils;
 import com.example.xiyou3g.lacweather.util.LogUtil;
 import com.example.xiyou3g.lacweather.util.ResourceUitls;
 
@@ -60,10 +61,18 @@ public class MainActivity extends AppCompatActivity
                 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
         getWindow().setStatusBarColor(Color.parseColor("#2A80B9"));
         setContentView(R.layout.activity_main);
+        // 初始化数据；
+        initData();
+        // 初始化控件；
+        initWight();
+    }
+
+    private void initData() {
         countyBeanList = new ArrayList<>();
         chooseAreaFragment = new ChooseAreaFragment();
         chooseAreaFragment.setBackListener(this);
-        initWight();
+        IconUtils.setWeatherBlackIcons();
+        IconUtils.setWeatherWhiteIcons();
     }
 
     @Override
