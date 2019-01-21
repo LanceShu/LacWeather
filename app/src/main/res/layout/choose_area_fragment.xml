@@ -8,7 +8,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/select_city_title_color">
+        android:background="@color/colorPrimary">
 
         <TextView
             android:id="@+id/title_text"

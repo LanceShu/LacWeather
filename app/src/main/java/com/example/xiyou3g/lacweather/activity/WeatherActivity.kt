@@ -21,10 +21,7 @@ import com.example.xiyou3g.lacweather.R
 import com.example.xiyou3g.lacweather.asynctask.GetLocalCityAsyncTask
 import com.example.xiyou3g.lacweather.gson.Weather
 import com.example.xiyou3g.lacweather.service.AutoUpdateService
-import com.example.xiyou3g.lacweather.util.HttpUtil
-import com.example.xiyou3g.lacweather.util.LogUtil
-import com.example.xiyou3g.lacweather.util.ResourceUitls
-import com.example.xiyou3g.lacweather.util.Utility
+import com.example.xiyou3g.lacweather.util.*
 import kotlinx.android.synthetic.main.activity_weather.*
 import kotlinx.android.synthetic.main.aqi.*
 import kotlinx.android.synthetic.main.nav_header.view.*
@@ -208,6 +205,7 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
             val weatherInfo = weather.now!!.more!!.info
             val localIcon = findViewById(R.id.nav_local) as ImageView
             GetLocalCityAsyncTask(localIcon, cityName).execute()
+            nav_weather_icon.setImageResource(IconUtils.getWeatherWhiteIconByWeather(weatherInfo))
             title_city.text = cityName
             nav_add_care.setOnClickListener(this@WeatherActivity)
 //            title_update_time.text = "更新于 " + updateTime
