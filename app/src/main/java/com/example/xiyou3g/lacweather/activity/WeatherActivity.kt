@@ -27,8 +27,6 @@ import com.example.xiyou3g.lacweather.util.ResourceUitls
 import com.example.xiyou3g.lacweather.util.Utility
 import kotlinx.android.synthetic.main.activity_weather.*
 import kotlinx.android.synthetic.main.aqi.*
-import kotlinx.android.synthetic.main.choose_area_fragment.*
-import kotlinx.android.synthetic.main.forecast_item.*
 import kotlinx.android.synthetic.main.nav_header.view.*
 import kotlinx.android.synthetic.main.now.*
 import kotlinx.android.synthetic.main.suggestion.*
@@ -56,6 +54,9 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
                         ResourceUitls.getStringById(this, R.string.success_add),
                         Toast.LENGTH_SHORT).show()
                 v.visibility = View.GONE
+            }
+            R.id.title_city -> {
+                startLoadFragmentActivity("nav_care")
             }
         }
     }
@@ -89,7 +90,9 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
         decerView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         window.statusBarColor = Color.TRANSPARENT
         setContentView(R.layout.activity_weather)
+        // 初始化控件；
         initWight()
+        // 获取从哪启动的activity;
         val nav_change = intent.getIntExtra("nav_change",-1)
         LogUtil.e("nav_change",nav_change.toString())
         if(nav_change == 1){
@@ -273,6 +276,8 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
                 drawerLayout!!.openDrawer(GravityCompat.START)
             }
         })
+        val cityTitle = findViewById(R.id.title_city) as TextView
+        cityTitle.setOnClickListener(this)
         // 左边抽屉的选项；
         navView!!.setNavigationItemSelectedListener(object : NavigationView.OnNavigationItemSelectedListener{
             override fun onNavigationItemSelected(item: MenuItem): Boolean {
