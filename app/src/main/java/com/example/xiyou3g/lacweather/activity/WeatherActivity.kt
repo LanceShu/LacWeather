@@ -15,12 +15,10 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.ScrollView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.bumptech.glide.Glide
 import com.example.xiyou3g.lacweather.R
+import com.example.xiyou3g.lacweather.asynctask.GetLocalCityAsyncTask
 import com.example.xiyou3g.lacweather.gson.Weather
 import com.example.xiyou3g.lacweather.service.AutoUpdateService
 import com.example.xiyou3g.lacweather.util.HttpUtil
@@ -205,6 +203,8 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
             val updateTime = weather.basic!!.update!!.updateTime!!.split(" ")[1]
             val degree = weather.now!!.temperature + "℃"
             val weatherInfo = weather.now!!.more!!.info
+            val localIcon = findViewById(R.id.nav_local) as ImageView
+            GetLocalCityAsyncTask(localIcon, cityName).execute()
             title_city.text = cityName
             nav_add_care.setOnClickListener(this@WeatherActivity)
 //            title_update_time.text = "更新于 " + updateTime

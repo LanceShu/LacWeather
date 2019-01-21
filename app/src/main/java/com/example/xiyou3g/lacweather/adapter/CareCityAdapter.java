@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.nfc.Tag;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -13,7 +15,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.xiyou3g.lacweather.R;
+import com.example.xiyou3g.lacweather.asynctask.GetLocalCityAsyncTask;
 import com.example.xiyou3g.lacweather.db.CareBean;
+import com.example.xiyou3g.lacweather.util.IconUtils;
+import com.example.xiyou3g.lacweather.util.LogUtil;
 
 import java.util.List;
 
@@ -50,7 +55,9 @@ public class CareCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         CareBean careBean = careBeanList.get(position);
         ViewHolder viewHolder = (ViewHolder) holder;
         viewHolder.cityName.setText(careBean.getCountyName());
+        setLocalIconVisiable(viewHolder.cityLocalIcon, careBean.getCountyName());
         viewHolder.cityWeather.setText(careBean.getCountyWeather());
+        getIconToImageView(viewHolder.cityWeatherIcon, careBean.getCountyWeather());
         viewHolder.cityTemp.setText(careBean.getCountyTemp());
         viewHolder.cityDelete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -87,6 +94,16 @@ public class CareCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         });
     }
 
+    private void setLocalIconVisiable(ImageView cityLocalIcon, String countyName) {
+        String name = countyName.split("·")[1].trim();
+        new GetLocalCityAsyncTask(cityLocalIcon, name).execute();
+    }
+
+    private void getIconToImageView(ImageView cityWeatherIcon, String countyWeather) {
+        int iconId = IconUtils.getWeatherBlackIconByWeather(countyWeather);
+        cityWeatherIcon.setImageResource(iconId);
+    }
+
     @Override
     public int getItemCount() {
         noCityText.setVisibility(careBeanList.size() > 0 ? View.GONE : View.VISIBLE);
@@ -95,7 +112,9 @@ public class CareCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         private TextView cityName;
+        private ImageView cityLocalIcon;
         private TextView cityWeather;
+        private ImageView cityWeatherIcon;
         private TextView cityTemp;
         private ImageView cityDelete;
         private ConstraintLayout careLayout;
@@ -104,7 +123,9 @@ public class CareCityAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             super(view);
             careLayout = (ConstraintLayout) view.findViewById(R.id.care_layout);
             cityName = (TextView) view.findViewById(R.id.care_city_name);
+            cityLocalIcon = (ImageView) view.findViewById(R.id.care_local_icon);
             cityWeather = (TextView) view.findViewById(R.id.care_city_weather);
+            cityWeatherIcon = (ImageView) view.findViewById(R.id.care_city_weather_icon);
             cityTemp = (TextView) view.findViewById(R.id.care_city_temperature);
             cityDelete = (ImageView) view.findViewById(R.id.care_city_delete);
         }

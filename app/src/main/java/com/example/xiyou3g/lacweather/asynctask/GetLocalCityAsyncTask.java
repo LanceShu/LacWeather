@@ -29,11 +29,18 @@ public class GetLocalCityAsyncTask extends AsyncTask<Void, Void, String> {
     private WeakReference<ImageView> im;
     private WeakReference<TextView> tv;
     private WeakReference<GifImageView> gfv;
+    private WeakReference<ImageView> localIv;
+    private String currentCity;
 
     public GetLocalCityAsyncTask(ImageView imageView, TextView textView, GifImageView gifImageView) {
         im = new WeakReference<>(imageView);
         tv = new WeakReference<>(textView);
         gfv = new WeakReference<>(gifImageView);
+    }
+
+    public GetLocalCityAsyncTask(ImageView imageView, String cityName) {
+        localIv = new WeakReference<>(imageView);
+        currentCity = cityName;
     }
 
     @Override
@@ -46,6 +53,10 @@ public class GetLocalCityAsyncTask extends AsyncTask<Void, Void, String> {
             iconImage.setVisibility(View.GONE);
             nameView.setVisibility(View.GONE);
             gifView.setVisibility(View.VISIBLE);
+        }
+        if (localIv != null) {
+            ImageView localIcon = localIv.get();
+            localIcon.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -64,7 +75,6 @@ public class GetLocalCityAsyncTask extends AsyncTask<Void, Void, String> {
             JSONObject addressJson = contentJson.getJSONObject("address_detail");
             String province = addressJson.getString("province");
             String city = addressJson.getString("city");
-            LogUtil.INSTANCE.e(TAG, province + city);
             sb.append(city.substring(0, city.length() - 1));
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -83,6 +93,12 @@ public class GetLocalCityAsyncTask extends AsyncTask<Void, Void, String> {
             iconImage.setVisibility(View.VISIBLE);
             nameView.setVisibility(View.VISIBLE);
             nameView.setText(string);
+        }
+        if (localIv != null) {
+            ImageView localIcon = localIv.get();
+            if (string.equals(currentCity)) {
+                localIcon.setVisibility(View.VISIBLE);
+            }
         }
     }
 }
