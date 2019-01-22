@@ -52,7 +52,7 @@ public class WeChatUtils {
         WXMediaMessage imgMes = new WXMediaMessage();
         imgMes.mediaObject = imgObj;
         Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-        Bitmap thumBmp = Bitmap.createScaledBitmap(bitmap, 180, 360, true);
+        Bitmap thumBmp = Bitmap.createScaledBitmap(bitmap, 128, 256, true);
         bitmap.recycle();
         imgMes.thumbData = getByteArrayByBitmap(thumBmp, true);
         SendMessageToWX.Req req = new SendMessageToWX.Req();

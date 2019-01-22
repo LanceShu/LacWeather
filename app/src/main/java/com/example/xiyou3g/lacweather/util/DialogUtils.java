@@ -27,7 +27,6 @@ public class DialogUtils {
         wechatFriends.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                WeChatUtils.getIWXAPIInstance(context);
                 WeChatUtils.sendImageToWeChat(filePath, WeChatUtils.WECHAT_FRIENDS);
                 dialog.dismiss();
             }
@@ -35,7 +34,6 @@ public class DialogUtils {
         wechatTimeline.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                WeChatUtils.getIWXAPIInstance(context);
                 WeChatUtils.sendImageToWeChat(filePath, WeChatUtils.WECHAT_TIMELINE);
                 dialog.dismiss();
             }

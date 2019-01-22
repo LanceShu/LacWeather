@@ -59,6 +59,7 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
                 if (WeChatUtils.getIWXAPIInstance(this).isWXAppInstalled) {
                     val filePath = ScreenUtils.saveBitmap(this,
                             ScreenUtils.compressBitmap(ScreenUtils.getBitmapByView(weatherLayout)))
+                    WeChatUtils.getIWXAPIInstance(this)
                     DialogUtils.showShareDialog(this, filePath)
                 } else {
                     Toast.makeText(this,
