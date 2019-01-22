@@ -29,4 +29,5 @@
     <string name="share_wechat_timeline">朋友圈</string>
     <string name="share_wechat_close">关闭</string>
     <string name="share_error">未安装微信，无法分享</string>
+    <string name="share_success">分享成功</string>
 </resources>

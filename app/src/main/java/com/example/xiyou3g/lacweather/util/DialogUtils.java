@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.xiyou3g.lacweather.R;
 
@@ -28,6 +29,7 @@ public class DialogUtils {
             public void onClick(View v) {
                 WeChatUtils.getIWXAPIInstance(context);
                 WeChatUtils.sendImageToWeChat(filePath, WeChatUtils.WECHAT_FRIENDS);
+                dialog.dismiss();
             }
         });
         wechatTimeline.setOnClickListener(new View.OnClickListener() {
@@ -35,6 +37,7 @@ public class DialogUtils {
             public void onClick(View v) {
                 WeChatUtils.getIWXAPIInstance(context);
                 WeChatUtils.sendImageToWeChat(filePath, WeChatUtils.WECHAT_TIMELINE);
+                dialog.dismiss();
             }
         });
         closeDialog.setOnClickListener(new View.OnClickListener() {

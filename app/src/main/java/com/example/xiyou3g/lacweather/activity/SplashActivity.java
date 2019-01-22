@@ -1,13 +1,17 @@
 package com.example.xiyou3g.lacweather.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -29,6 +33,8 @@ import com.example.xiyou3g.lacweather.util.ThreadPoolUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -126,13 +132,60 @@ public class SplashActivity extends AppCompatActivity{
         currentTime = (int) System.currentTimeMillis();
         // 初始化控件;
         initWight();
-        splashHandler = new SplashHandler(this, splashImage, tvs);
-        ThreadPoolUtils.getInstance().excute(new Runnable() {
-            @Override
-            public void run() {
-                loadImageBackground();
+        // 检查权限;
+        CheckPermission();
+    }
+
+    private void CheckPermission() {
+        List<String> permissionList = new ArrayList<>();
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        }
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (ActivityCompat.checkSelfPermission(this,
+                Manifest.permission.READ_PHONE_STATE) !=PackageManager.PERMISSION_GRANTED) {
+            permissionList.add(Manifest.permission.READ_PHONE_STATE);
+        }
+        if (permissionList.isEmpty()) {
+            /*如果不需要请求权限就执行操作*/
+            splashHandler = new SplashHandler(this, splashImage, tvs);
+            ThreadPoolUtils.getInstance().excute(new Runnable() {
+                @Override
+                public void run() {loadImageBackground();
+                }
+            });
+        } else {
+            String[] permission = permissionList.toArray(new String[permissionList.size()]);
+            ActivityCompat.requestPermissions(this, permission, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == 1) {
+            if (grantResults.length > 0) {
+                for (int result : grantResults) {
+                    if (result != PackageManager.PERMISSION_GRANTED) {
+                        //权限若没有全部通过，就结束Demo
+                        finish();
+                        break;
+                    }
+                }
+                /*请求权限成功后执行操作*/
+                splashHandler = new SplashHandler(this, splashImage, tvs);
+                ThreadPoolUtils.getInstance().excute(new Runnable() {
+                    @Override
+                    public void run() {loadImageBackground();
+                    }
+                });
+            } else {
+                finish();
             }
-        });
+        }
     }
 
     private void initWight() {
