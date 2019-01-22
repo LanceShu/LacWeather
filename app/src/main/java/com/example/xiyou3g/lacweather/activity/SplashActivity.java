@@ -3,7 +3,6 @@ package com.example.xiyou3g.lacweather.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,7 +29,6 @@ import com.example.xiyou3g.lacweather.util.ThreadPoolUtils;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.net.SocketTimeoutException;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -126,6 +124,7 @@ public class SplashActivity extends AppCompatActivity{
         setContentView(R.layout.splash_layout);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         currentTime = (int) System.currentTimeMillis();
+        // 初始化控件;
         initWight();
         splashHandler = new SplashHandler(this, splashImage, tvs);
         ThreadPoolUtils.getInstance().excute(new Runnable() {

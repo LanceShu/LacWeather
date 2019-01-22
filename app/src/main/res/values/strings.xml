@@ -23,4 +23,10 @@
     <string name="success_add" >已添加至特别关心</string>
 
     <string name="care_no_city_list" >暂无城市哦o(╥﹏╥)o</string>
+
+    <string name="share_wechat_dialog">分享至：</string>
+    <string name="share_wechat_friend">微信好友</string>
+    <string name="share_wechat_timeline">朋友圈</string>
+    <string name="share_wechat_close">关闭</string>
+    <string name="share_error">未安装微信，无法分享</string>
 </resources>

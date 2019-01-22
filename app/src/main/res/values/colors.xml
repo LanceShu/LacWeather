@@ -7,4 +7,5 @@
     <color name="edit_back_color">#0a0a0a</color>
     <color name="edit_hint_color">#706f6f</color>
     <color name="select_city_title_color">#2A80B9</color>
+    <color name="share_dialog_back">#e1e1e1</color>
 </resources>

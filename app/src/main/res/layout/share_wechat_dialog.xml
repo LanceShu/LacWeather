@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="300dp"
+    android:layout_height="200dp"
+    android:background="@color/share_dialog_back"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/share_title"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="@string/share_wechat_dialog"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:textSize="18sp"
+        android:gravity="center_vertical"
+        android:paddingStart="16dp"
+        tools:ignore="RtlSymmetry"
+        android:textColor="@color/edit_back_color" />
+
+    <LinearLayout
+        android:id="@+id/share_wechat_friends"
+        android:layout_width="80dp"
+        android:layout_height="100dp"
+        app:layout_constraintTop_toBottomOf="@id/share_title"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="54dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:padding="8dp"
+            android:src="@drawable/wechat_friends"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="@string/share_wechat_friend"
+            android:textColor="@color/edit_back_color"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/share_wechat_timeline"
+        android:layout_width="80dp"
+        android:layout_height="100dp"
+        app:layout_constraintTop_toBottomOf="@id/share_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="54dp"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:padding="8dp"
+            android:src="@drawable/wechat_timeline"
+            android:layout_gravity="center_horizontal"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:text="@string/share_wechat_timeline"
+            android:textColor="@color/edit_back_color"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/share_close_btn"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:padding="6dp"
+        android:layout_marginBottom="6dp"
+        android:layout_marginTop="4dp"
+        app:layout_constraintTop_toBottomOf="@id/share_wechat_friends"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@mipmap/delete" />
+
+</android.support.constraint.ConstraintLayout>

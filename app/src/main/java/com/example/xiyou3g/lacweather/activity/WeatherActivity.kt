@@ -55,6 +55,18 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
             R.id.title_city -> {
                 startLoadFragmentActivity("nav_care")
             }
+            R.id.nav_share -> {
+                if (WeChatUtils.getIWXAPIInstance(this).isWXAppInstalled) {
+                    val filePath = ScreenUtils.saveBitmap(this,
+                            ScreenUtils.compressBitmap(ScreenUtils.getBitmapByView(weatherLayout)))
+                    DialogUtils.showShareDialog(this, filePath)
+                } else {
+                    Toast.makeText(this,
+                            ResourceUitls.getStringById(this, R.string.share_error),
+                            Toast.LENGTH_SHORT).show()
+                }
+
+            }
         }
     }
 
@@ -208,6 +220,7 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
             nav_weather_icon.setImageResource(IconUtils.getWeatherWhiteIconByWeather(weatherInfo))
             title_city.text = cityName
             nav_add_care.setOnClickListener(this@WeatherActivity)
+            nav_share.setOnClickListener(this@WeatherActivity)
 //            title_update_time.text = "更新于 " + updateTime
             now_update_time.text = "更新于 " + updateTime
             degree_text.text = degree
