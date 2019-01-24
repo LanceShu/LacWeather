@@ -152,15 +152,45 @@ public class SplashActivity extends AppCompatActivity{
         }
         if (permissionList.isEmpty()) {
             /*如果不需要请求权限就执行操作*/
-            splashHandler = new SplashHandler(this, splashImage, tvs);
-            ThreadPoolUtils.getInstance().excute(new Runnable() {
-                @Override
-                public void run() {loadImageBackground();
-                }
-            });
+            loadData();
+            loadBack();
         } else {
             String[] permission = permissionList.toArray(new String[permissionList.size()]);
             ActivityCompat.requestPermissions(this, permission, 1);
+        }
+    }
+
+    // 请求数据;
+    private void loadData() {
+        splashHandler = new SplashHandler(this, splashImage, tvs);
+        ThreadPoolUtils.getInstance().excute(new Runnable() {
+            @Override
+            public void run() {
+                loadImageBackground();
+            }
+        });
+    }
+
+    // 加载背景；
+    private void loadBack() {
+        splashHandler = new SplashHandler(this, splashImage, tvs);
+        setAlphaAnimByView(tvs[0], 0.0f, 1.0f, 0, DURATION);
+        setAlphaAnimByView(tvs[1], 0.0f, 1.0f, 300, DURATION);
+        setAlphaAnimByView(tvs[2], 0.0f, 1.0f, 600, DURATION);
+        setAlphaAnimByView(tvs[3], 0.0f, 1.0f, 900, DURATION);
+        setAlphaAnimByView(tvs[4], 0.0f, 1.0f, 1200, DURATION);
+        currentTime = (int)System.currentTimeMillis() - currentTime;
+        if (currentTime >= 3000) {
+            startActivity(new Intent(this, MainActivity.class));
+            finish();
+        } else {
+            splashHandler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    startActivity(new Intent(SplashActivity.this, MainActivity.class));
+                    finish();
+                }
+            }, 3000);
         }
     }
 
@@ -176,12 +206,8 @@ public class SplashActivity extends AppCompatActivity{
                     }
                 }
                 /*请求权限成功后执行操作*/
-                splashHandler = new SplashHandler(this, splashImage, tvs);
-                ThreadPoolUtils.getInstance().excute(new Runnable() {
-                    @Override
-                    public void run() {loadImageBackground();
-                    }
-                });
+                loadData();
+                loadBack();
             } else {
                 finish();
             }
@@ -211,7 +237,7 @@ public class SplashActivity extends AppCompatActivity{
         HttpUtil.INSTANCE.sendOkHttpRequest(image_url, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                LogUtil.INSTANCE.e(TAG, e.getCause().toString());
+                LogUtil.INSTANCE.e(TAG, e.toString());
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {

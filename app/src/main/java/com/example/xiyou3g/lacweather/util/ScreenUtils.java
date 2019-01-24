@@ -5,8 +5,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.ScrollView;
+
+import com.example.xiyou3g.lacweather.R;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -36,12 +39,14 @@ public class ScreenUtils {
     }
 
     // 获取ScrollView的截图Bitmap；
-    public static Bitmap getBitmapByView(ScrollView scrollView) {
+    public static Bitmap getBitmapByView(Context context, ScrollView scrollView) {
         int h = 0;
         Bitmap bitmap = null;
         // 获取ScrollView的高度；
         for (int i = 0; i < scrollView.getChildCount(); i++) {
             h += scrollView.getChildAt(i).getHeight();
+            Drawable drawable = context.getResources().getDrawable(R.drawable.splash_backgroud, null);
+            scrollView.getChildAt(i).setBackground(drawable);
         }
         // 创建Bitmap；
         bitmap = Bitmap.createBitmap(scrollView.getWidth(), h, Bitmap.Config.RGB_565);
