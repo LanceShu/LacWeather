@@ -125,6 +125,7 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
                 mWeatherId = intent.getStringExtra("weather_id")
                 requestWeather(mWeatherId)
             }
+            // 加载必应背景图；
 //            val bingPic = prefs.getString("bing_pic",null)
 //            if(bingPic != null){
 //                Glide.with(this).load(bingPic).into(bing_pc_img)
