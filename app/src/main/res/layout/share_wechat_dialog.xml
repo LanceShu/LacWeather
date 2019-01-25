@@ -14,11 +14,11 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:gravity="center_vertical"
         android:paddingStart="16dp"
         tools:ignore="RtlSymmetry"
-        android:textColor="@color/edit_back_color" />
+        android:textColor="@color/about_text_color" />
 
     <LinearLayout
         android:id="@+id/share_wechat_friends"
@@ -41,7 +41,7 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:text="@string/share_wechat_friend"
-            android:textColor="@color/edit_back_color"
+            android:textColor="@color/about_text_color"
             android:textSize="14sp"
             android:gravity="center"
             android:layout_gravity="center_horizontal"/>
@@ -69,7 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:text="@string/share_wechat_timeline"
-            android:textColor="@color/edit_back_color"
+            android:textColor="@color/about_text_color"
             android:textSize="14sp"
             android:gravity="center"
             android:layout_gravity="center_horizontal"/>
@@ -87,6 +87,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:src="@mipmap/delete" />
+        android:src="@mipmap/close" />
 
 </android.support.constraint.ConstraintLayout>

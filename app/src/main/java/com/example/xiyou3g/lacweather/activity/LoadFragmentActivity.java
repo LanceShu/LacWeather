@@ -65,6 +65,7 @@ public class LoadFragmentActivity extends AppCompatActivity
                     new GetCareWeatherAsyncTask(careCitiesFragment, this)
                             .execute(careWeatherIds);
                 }
+                break;
             case "nav_about":
                 AboutFragment aboutFragment = new AboutFragment();
                 addFragment(layoutId, aboutFragment);
