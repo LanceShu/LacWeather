@@ -323,6 +323,7 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
                     R.id.nav_about -> {
                         navView!!.setCheckedItem(R.id.nav_about)
                         drawerLayout!!.closeDrawers()
+                        startLoadFragmentActivity("nav_about")
                     }
                 }
                 return true

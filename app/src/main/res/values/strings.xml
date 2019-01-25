@@ -1,13 +1,14 @@
 <resources>
     <string name="app_name">极简天气</string>
+    <string name="app_version">版本号：1.0</string>
     <string name="splash_content">background</string>
+    <string name="app_copyright">Copyright@2019</string>
 
     <string name="splash_content_title_1">极</string>
     <string name="splash_content_title_2">简</string>
     <string name="splash_content_title_3">天</string>
     <string name="splash_content_title_4">气</string>
 
-    <string name="splash_content_title_5">Copyright@2019</string>
     <string name="main_dialog_title">温馨提示：</string>
     <string name="main_dialog_content" >正在加载城市列表…</string>
 
@@ -30,4 +31,6 @@
     <string name="share_wechat_close">关闭</string>
     <string name="share_error">未安装微信，无法分享</string>
     <string name="share_success">分享成功</string>
+
+    <string name="about_upgrade_text">检查更新</string>
 </resources>

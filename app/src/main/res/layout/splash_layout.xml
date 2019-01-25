@@ -71,7 +71,7 @@
         android:id="@+id/splash_tv_5"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/splash_content_title_5"
+        android:text="@string/app_copyright"
         android:textSize="14sp"
         android:gravity="center"
         android:textColor="@color/text_color"

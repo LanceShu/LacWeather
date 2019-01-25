@@ -15,6 +15,7 @@ import android.view.WindowManager;
 
 import com.example.xiyou3g.lacweather.R;
 import com.example.xiyou3g.lacweather.asynctask.GetCareWeatherAsyncTask;
+import com.example.xiyou3g.lacweather.fragment.AboutFragment;
 import com.example.xiyou3g.lacweather.fragment.CareCitiesFragment;
 import com.example.xiyou3g.lacweather.fragment.ChooseAreaFragment;
 import com.example.xiyou3g.lacweather.fragment.FindCityFragment;
@@ -64,6 +65,11 @@ public class LoadFragmentActivity extends AppCompatActivity
                     new GetCareWeatherAsyncTask(careCitiesFragment, this)
                             .execute(careWeatherIds);
                 }
+            case "nav_about":
+                AboutFragment aboutFragment = new AboutFragment();
+                addFragment(layoutId, aboutFragment);
+                currentFragment = aboutFragment;
+                break;
             default:
                 break;
         }

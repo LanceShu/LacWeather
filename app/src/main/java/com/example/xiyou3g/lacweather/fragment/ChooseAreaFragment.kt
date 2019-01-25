@@ -156,12 +156,18 @@ class ChooseAreaFragment : Fragment(), View.OnClickListener {
             queryCities()
         } else if (currentLevel == LEVEL_CITY) {
             queryProvinces()
+        } else {
+            activity.finish()
         }
     }
 
     private fun queryProvinces() {
         titleText!!.text = "中国"
-        backButton!!.visibility = View.GONE
+        if (activity is LoadFragmentActivity) {
+            backButton!!.visibility = View.VISIBLE
+        } else {
+            backButton!!.visibility = View.GONE
+        }
         provinceList = DataSupport.findAll(Province::class.java)
         if (provinceList!!.size > 0) {
             dataList.clear()
