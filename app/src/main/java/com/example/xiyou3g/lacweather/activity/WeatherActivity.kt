@@ -125,13 +125,13 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
                 mWeatherId = intent.getStringExtra("weather_id")
                 requestWeather(mWeatherId)
             }
-            val bingPic = prefs.getString("bing_pic",null)
-            if(bingPic != null){
-                Glide.with(this).load(bingPic).into(bing_pc_img)
-                Glide.with(this).load(bingPic).into(navView!!.getHeaderView(0).header_image)
-            }else{
-                loadBingPic()
-            }
+//            val bingPic = prefs.getString("bing_pic",null)
+//            if(bingPic != null){
+//                Glide.with(this).load(bingPic).into(bing_pc_img)
+//                Glide.with(this).load(bingPic).into(navView!!.getHeaderView(0).header_image)
+//            }else{
+//                loadBingPic()
+//            }
         }
         swipeRefresh!!.setOnRefreshListener(object : SwipeRefreshLayout.OnRefreshListener{
             override fun onRefresh() {
@@ -200,7 +200,7 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
                 })
             }
         })
-        loadBingPic()
+//        loadBingPic()
     }
 
     /*处理并展示Weather实体类中的数据*/

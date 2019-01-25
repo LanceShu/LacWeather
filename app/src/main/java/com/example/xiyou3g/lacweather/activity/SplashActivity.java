@@ -23,9 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.example.xiyou3g.lacweather.R;
 import com.example.xiyou3g.lacweather.util.HttpUtil;
 import com.example.xiyou3g.lacweather.util.LogUtil;
@@ -61,57 +58,24 @@ public class SplashActivity extends AppCompatActivity{
     static class SplashHandler extends Handler {
         private WeakReference<Activity> activity;
         private WeakReference<View> view;
-        private WeakReference<TextView[]> textViews;
 
-        SplashHandler (Activity activity, View view, TextView[] textViews) {
+        SplashHandler (Activity activity, View view) {
             this.activity = new WeakReference<>(activity);
             this.view = new WeakReference<>(view);
-            this.textViews = new WeakReference<>(textViews);
         }
 
         @Override
         public void handleMessage(Message msg) {
-            if (activity != null && view != null && textViews != null) {
+            if (activity != null && view != null) {
                 final SplashActivity a = (SplashActivity) activity.get();
                 View v = view.get();
-                final TextView[] tvs = textViews.get();
                 switch (msg.what) {
                     case UPDATE_SPLASH_BACK:
                         if (v instanceof ImageView) {
                             Log.e(TAG, "handler");
                             String url = (String) msg.obj;
                             Log.e(TAG, url);
-                            Glide.with(a).load(url).listener(new RequestListener<String, GlideDrawable>() {
-                                        @Override
-                                        public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-                                            e.printStackTrace();
-                                            return false;
-                                        }
-
-                                        @Override
-                                        public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-                                            a.setAlphaAnimByView(tvs[0], 0.0f, 1.0f, 0, a.DURATION);
-                                            a.setAlphaAnimByView(tvs[1], 0.0f, 1.0f, 300, a.DURATION);
-                                            a.setAlphaAnimByView(tvs[2], 0.0f, 1.0f, 600, a.DURATION);
-                                            a.setAlphaAnimByView(tvs[3], 0.0f, 1.0f, 900, a.DURATION);
-                                            a.setAlphaAnimByView(tvs[4], 0.0f, 1.0f, 1200, a.DURATION);
-                                            a.currentTime = (int)System.currentTimeMillis() - a.currentTime;
-                                            if (a.currentTime >= a.START_TIME) {
-                                                a.startActivity(new Intent(a, MainActivity.class));
-                                                a.finish();
-                                            } else {
-                                                postDelayed(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        a.startActivity(new Intent(a, MainActivity.class));
-                                                        a.finish();
-                                                    }
-                                                }, a.START_TIME);
-                                            }
-                                            return false;
-                                        }
-                                    })
-                                    .into((ImageView) v);
+                            Glide.with(a).load(url).into((ImageView) v);
                         }
                         break;
                     default:
@@ -152,7 +116,6 @@ public class SplashActivity extends AppCompatActivity{
         }
         if (permissionList.isEmpty()) {
             /*如果不需要请求权限就执行操作*/
-            loadData();
             loadBack();
         } else {
             String[] permission = permissionList.toArray(new String[permissionList.size()]);
@@ -160,27 +123,22 @@ public class SplashActivity extends AppCompatActivity{
         }
     }
 
-    // 请求数据;
-    private void loadData() {
-        splashHandler = new SplashHandler(this, splashImage, tvs);
+    // 加载背景；
+    private void loadBack() {
+        splashHandler = new SplashHandler(this, splashImage);
+        setAlphaAnimByView(tvs[0], 0.0f, 1.0f, 0, DURATION);
+        setAlphaAnimByView(tvs[1], 0.0f, 1.0f, 300, DURATION);
+        setAlphaAnimByView(tvs[2], 0.0f, 1.0f, 600, DURATION);
+        setAlphaAnimByView(tvs[3], 0.0f, 1.0f, 900, DURATION);
+        setAlphaAnimByView(tvs[4], 0.0f, 1.0f, 1200, DURATION);
         ThreadPoolUtils.getInstance().excute(new Runnable() {
             @Override
             public void run() {
                 loadImageBackground();
             }
         });
-    }
-
-    // 加载背景；
-    private void loadBack() {
-        splashHandler = new SplashHandler(this, splashImage, tvs);
-        setAlphaAnimByView(tvs[0], 0.0f, 1.0f, 0, DURATION);
-        setAlphaAnimByView(tvs[1], 0.0f, 1.0f, 300, DURATION);
-        setAlphaAnimByView(tvs[2], 0.0f, 1.0f, 600, DURATION);
-        setAlphaAnimByView(tvs[3], 0.0f, 1.0f, 900, DURATION);
-        setAlphaAnimByView(tvs[4], 0.0f, 1.0f, 1200, DURATION);
         currentTime = (int)System.currentTimeMillis() - currentTime;
-        if (currentTime >= 3000) {
+        if (currentTime >= START_TIME) {
             startActivity(new Intent(this, MainActivity.class));
             finish();
         } else {
@@ -190,7 +148,7 @@ public class SplashActivity extends AppCompatActivity{
                     startActivity(new Intent(SplashActivity.this, MainActivity.class));
                     finish();
                 }
-            }, 3000);
+            }, START_TIME);
         }
     }
 
@@ -206,7 +164,6 @@ public class SplashActivity extends AppCompatActivity{
                     }
                 }
                 /*请求权限成功后执行操作*/
-                loadData();
                 loadBack();
             } else {
                 finish();
@@ -233,6 +190,7 @@ public class SplashActivity extends AppCompatActivity{
         view.setAnimation(alphaAnimation);
     }
 
+    // 网络请求加载背景图；
     private void loadImageBackground() {
         HttpUtil.INSTANCE.sendOkHttpRequest(image_url, new Callback() {
             @Override
@@ -265,6 +223,7 @@ public class SplashActivity extends AppCompatActivity{
         });
     }
 
+    // 从缓存中获取背景图信息;
     private boolean getInforFromSharedPreference(){
         boolean flag = false;
         String url = preferences.getString("splash_back", null);
