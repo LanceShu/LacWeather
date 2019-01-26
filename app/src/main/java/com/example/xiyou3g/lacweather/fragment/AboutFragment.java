@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.xiyou3g.lacweather.R;
+import com.example.xiyou3g.lacweather.util.ApkUtils;
+import com.example.xiyou3g.lacweather.util.LogUtil;
 import com.example.xiyou3g.lacweather.util.ResourceUitls;
 
 /**
@@ -18,6 +20,8 @@ import com.example.xiyou3g.lacweather.util.ResourceUitls;
  */
 
 public class AboutFragment extends Fragment implements View.OnClickListener {
+    private static final String TAG = "AboutFragment";
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -43,6 +47,11 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
                 getActivity().finish();
                 break;
             case R.id.about_checkout_upgrade:
+                String version = ApkUtils.getAPKVersionCode(getContext(),
+                        getContext().getPackageName());
+                if (version != null) {
+                    LogUtil.INSTANCE.e(TAG, version);
+                }
                 break;
             default:
                 break;
