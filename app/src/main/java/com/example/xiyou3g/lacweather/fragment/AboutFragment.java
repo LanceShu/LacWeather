@@ -84,11 +84,11 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         int version = ApkUtils.getAPKVersionCode(getContext(),
                 getContext().getPackageName());
         if (version != -1) {
-            LogUtil.INSTANCE.e(TAG, version+"");
             new CheckoutVersionCodeTask(getContext(), version).execute(VERSION_CODE_URL);
         }
     }
 
+    // 检查更新任务；
     static class CheckoutVersionCodeTask extends AsyncTask<String, Void, Integer> {
         private WeakReference<Context> c;
         private int localVersionCode;
@@ -139,6 +139,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
                 LogUtil.INSTANCE.e(TAG, "currentCode:" + localVersionCode
                         + ", newVersionCode:" + currentVersionCode);
                 if (currentVersionCode > localVersionCode) {
+                    // 展示下载询问框;
                     showAlertDialog(context);
                 } else {
                     Toast.makeText(context,
@@ -173,6 +174,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+    // apk下载任务；
     static class DownloadApkFromServerTask extends AsyncTask<String, Void, Void> {
         private WeakReference<Context> c;
 
