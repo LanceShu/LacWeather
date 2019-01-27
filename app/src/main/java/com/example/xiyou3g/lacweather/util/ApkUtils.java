@@ -14,16 +14,29 @@ public class ApkUtils {
 
     }
 
-    public static String getAPKVersionCode(Context context, String packageName) {
+    public static String getAPKVersionName(Context context, String packageName) {
         if (packageName != null && packageName.length() > 0) {
             try {
                 PackageManager manager = context.getPackageManager();
                 PackageInfo info = manager.getPackageInfo(packageName, 0);
-                return String.valueOf(info.versionCode);
+                return info.versionName;
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
         }
         return null;
+    }
+
+    public static int getAPKVersionCode(Context context, String packageName) {
+        if (packageName != null && packageName.length() > 0) {
+            try {
+                PackageManager manager = context.getPackageManager();
+                PackageInfo info = manager.getPackageInfo(packageName, 0);
+                return info.versionCode;
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return -1;
     }
 }
