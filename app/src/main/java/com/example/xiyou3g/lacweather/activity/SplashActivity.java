@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -25,6 +26,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.xiyou3g.lacweather.R;
 import com.example.xiyou3g.lacweather.util.HttpUtil;
+import com.example.xiyou3g.lacweather.util.IconUtils;
 import com.example.xiyou3g.lacweather.util.LogUtil;
 import com.example.xiyou3g.lacweather.util.ThreadPoolUtils;
 
@@ -75,7 +77,9 @@ public class SplashActivity extends AppCompatActivity{
                             Log.e(TAG, "handler");
                             String url = (String) msg.obj;
                             Log.e(TAG, url);
-                            Glide.with(a).load(url).into((ImageView) v);
+                            if (!a.isFinishing()) {
+                                Glide.with(a).load(url).into((ImageView) v);
+                            }
                         }
                         break;
                     default:
@@ -94,10 +98,17 @@ public class SplashActivity extends AppCompatActivity{
         setContentView(R.layout.splash_layout);
         preferences = PreferenceManager.getDefaultSharedPreferences(this);
         currentTime = (int) System.currentTimeMillis();
+        // 初始化数据;
+        initData();
         // 初始化控件;
         initWight();
         // 检查权限;
         CheckPermission();
+    }
+
+    private void initData() {
+        IconUtils.setWeatherBlackIcons();
+        IconUtils.setWeatherWhiteIcons();
     }
 
     private void CheckPermission() {

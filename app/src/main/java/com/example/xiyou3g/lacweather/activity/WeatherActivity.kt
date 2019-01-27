@@ -2,6 +2,7 @@ package com.example.xiyou3g.lacweather.activity
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Color
 import android.os.AsyncTask
 import android.os.Bundle
@@ -20,6 +21,7 @@ import com.bumptech.glide.Glide
 import com.example.xiyou3g.lacweather.R
 import com.example.xiyou3g.lacweather.asynctask.GetLocalCityAsyncTask
 import com.example.xiyou3g.lacweather.gson.Weather
+import com.example.xiyou3g.lacweather.receiver.UpdataBroadcastRecevier
 import com.example.xiyou3g.lacweather.service.AutoUpdateService
 import com.example.xiyou3g.lacweather.util.*
 import kotlinx.android.synthetic.main.activity_weather.*
@@ -42,49 +44,6 @@ import java.util.concurrent.TimeUnit
  */
 
 class WeatherActivity: AppCompatActivity(), View.OnClickListener{
-    override fun onClick(v: View?) {
-        when(v!!.id) {
-            R.id.nav_add_care -> {
-                LogUtil.e(TAG, mWeatherId!!)
-                addToSave(mWeatherId!!)
-                Toast.makeText(this,
-                        ResourceUitls.getStringById(this, R.string.success_add),
-                        Toast.LENGTH_SHORT).show()
-                v.visibility = View.GONE
-            }
-            R.id.title_city -> {
-                startLoadFragmentActivity("nav_care")
-            }
-            R.id.nav_share -> {
-                if (WeChatUtils.getIWXAPIInstance(this).isWXAppInstalled) {
-                    val filePath = ScreenUtils.saveBitmap(this,
-                            ScreenUtils.compressBitmap(ScreenUtils.getBitmapByView(this, weatherLayout)))
-                    WeChatUtils.getIWXAPIInstance(this)
-                    DialogUtils.showShareDialog(this, filePath)
-                } else {
-                    Toast.makeText(this,
-                            ResourceUitls.getStringById(this, R.string.share_error),
-                            Toast.LENGTH_SHORT).show()
-                }
-
-            }
-        }
-    }
-
-    private fun addToSave(mWeatherId: String) {
-        val preference = PreferenceManager.getDefaultSharedPreferences(this)
-        val stringBuffer = StringBuffer()
-        stringBuffer.append(preference.getString("care_cities", ""))
-        if (stringBuffer.isEmpty()) {
-            stringBuffer.append(mWeatherId)
-        } else {
-            stringBuffer.append("&$mWeatherId")
-        }
-        val editor = preference.edit()
-        editor.putString("care_cities", stringBuffer.toString())
-        editor.apply()
-    }
-
     private var weatherLayout: ScrollView? = null
     private var forecastLayout: LinearLayout?  = null
     private var navView: NavigationView? = null
@@ -93,6 +52,7 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
     private var drawerLayout: DrawerLayout? = null
     private var swipeRefresh: SwipeRefreshLayout? = null
     private val TAG = "WeatherActivity"
+    private val receiver = UpdataBroadcastRecevier()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -100,6 +60,8 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
         decerView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or View.SYSTEM_UI_FLAG_LAYOUT_STABLE
         window.statusBarColor = Color.TRANSPARENT
         setContentView(R.layout.activity_weather)
+        // 注册广播；
+        registerBroadRecevier()
         // 初始化控件；
         initWight()
         // 获取从哪启动的activity;
@@ -140,6 +102,17 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
                 requestWeather(mWeatherId)
             }
         })
+    }
+
+    private fun registerBroadRecevier() {
+        val filter = IntentFilter()
+        filter.addAction("android.intent.action.DOWNLOAD_COMPLETE")
+        registerReceiver(receiver, filter)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(receiver)
     }
 
     override fun onStart() {
@@ -329,6 +302,49 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
                 return true
             }
         })
+    }
+
+    override fun onClick(v: View?) {
+        when(v!!.id) {
+            R.id.nav_add_care -> {
+                LogUtil.e(TAG, mWeatherId!!)
+                addToSave(mWeatherId!!)
+                Toast.makeText(this,
+                        ResourceUitls.getStringById(this, R.string.success_add),
+                        Toast.LENGTH_SHORT).show()
+                v.visibility = View.GONE
+            }
+            R.id.title_city -> {
+                startLoadFragmentActivity("nav_care")
+            }
+            R.id.nav_share -> {
+                if (WeChatUtils.getIWXAPIInstance(this).isWXAppInstalled) {
+                    val filePath = ScreenUtils.saveBitmap(this,
+                            ScreenUtils.compressBitmap(ScreenUtils.getBitmapByView(this, weatherLayout)))
+                    WeChatUtils.getIWXAPIInstance(this)
+                    DialogUtils.showShareDialog(this, filePath)
+                } else {
+                    Toast.makeText(this,
+                            ResourceUitls.getStringById(this, R.string.share_error),
+                            Toast.LENGTH_SHORT).show()
+                }
+
+            }
+        }
+    }
+
+    private fun addToSave(mWeatherId: String) {
+        val preference = PreferenceManager.getDefaultSharedPreferences(this)
+        val stringBuffer = StringBuffer()
+        stringBuffer.append(preference.getString("care_cities", ""))
+        if (stringBuffer.isEmpty()) {
+            stringBuffer.append(mWeatherId)
+        } else {
+            stringBuffer.append("&$mWeatherId")
+        }
+        val editor = preference.edit()
+        editor.putString("care_cities", stringBuffer.toString())
+        editor.apply()
     }
 
     private fun isVisiableToNavAddBtn(mWeatherId: String?): Boolean {

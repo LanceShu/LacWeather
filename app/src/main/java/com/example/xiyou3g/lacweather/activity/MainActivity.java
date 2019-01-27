@@ -71,8 +71,6 @@ public class MainActivity extends AppCompatActivity
         countyBeanList = new ArrayList<>();
         chooseAreaFragment = new ChooseAreaFragment();
         chooseAreaFragment.setBackListener(this);
-        IconUtils.setWeatherBlackIcons();
-        IconUtils.setWeatherWhiteIcons();
     }
 
     @Override

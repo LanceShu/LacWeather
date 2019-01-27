@@ -39,6 +39,7 @@ import okhttp3.Response;
 public class AboutFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "AboutFragment";
     private static final String VERSION_CODE_URL = "http://123.207.145.251:8080/LacWeather/checkout_code";
+    private static final String GET_APK_UPGRADE_URL = "http://123.207.145.251:8080/LacWeather/get_upgrade_url";
 
     @Nullable
     @Override
@@ -119,9 +120,11 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
                 Response response = client.newCall(request).execute();
                 if (response != null) {
                     String resp = response.body().string();
-                    JSONObject jsonObject = new JSONArray(resp).getJSONObject(0);
-                    JSONObject apkInfo = jsonObject.getJSONObject("apkInfo");
-                    versionCode = apkInfo.getInt("versionCode");
+                    if (!resp.contains("file is not exists!")) {
+                        JSONObject jsonObject = new JSONArray(resp).getJSONObject(0);
+                        JSONObject apkInfo = jsonObject.getJSONObject("apkInfo");
+                        versionCode = apkInfo.getInt("versionCode");
+                    }
                 }
             } catch (IOException | JSONException e) {
                 e.printStackTrace();
@@ -133,7 +136,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         protected void onPostExecute(Integer currentVersionCode) {
             if (c != null) {
                 Context context = c.get();
-                LogUtil.INSTANCE.e(TAG, "currentCode:" + currentVersionCode
+                LogUtil.INSTANCE.e(TAG, "currentCode:" + localVersionCode
                         + ", newVersionCode:" + currentVersionCode);
                 if (currentVersionCode > localVersionCode) {
                     showAlertDialog(context);
@@ -154,18 +157,51 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
             return progressDialog;
         }
 
-        private void showAlertDialog(Context context) {
+        private void showAlertDialog(final Context context) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
             alertDialog.setTitle(ResourceUitls.getStringById(context, R.string.dialog_title));
             alertDialog.setMessage("是否立即更新?");
             alertDialog.setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-
+                    new DownloadApkFromServerTask(context).execute(GET_APK_UPGRADE_URL);
+                    Toast.makeText(context, "后台开始下载", Toast.LENGTH_SHORT).show();
                 }
             });
-            alertDialog.setNegativeButton("再想想", null);
+            alertDialog.setNegativeButton("以后再说", null);
             alertDialog.show();
+        }
+    }
+
+    static class DownloadApkFromServerTask extends AsyncTask<String, Void, Void> {
+        private WeakReference<Context> c;
+
+        DownloadApkFromServerTask(Context context) {
+            c = new WeakReference<>(context);
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            if (c != null) {
+                Context context = c.get();
+                OkHttpClient client = new OkHttpClient();
+                Request request = new Request.Builder()
+                        .url(strings[0])
+                        .build();
+                try {
+                    Response response = client.newCall(request).execute();
+                    if (response != null) {
+                        String resp = response.body().string();
+                        if (!resp.contains("file is not exists!")) {
+                            ApkUtils.downloadAPK(context, resp);
+                            LogUtil.INSTANCE.e(TAG, resp);
+                        }
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return null;
         }
     }
 }
