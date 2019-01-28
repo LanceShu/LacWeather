@@ -28,8 +28,10 @@ public class UpdataBroadcastRecevier extends BroadcastReceiver {
         long apkId = sharedPreferences.getLong("apk_id", -2);
         if (downloadId == apkId) {
             DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-            Uri downloadFileUri = manager.getUriForDownloadedFile(downloadId);
-            installAPK(context, downloadFileUri);
+            if (manager != null) {
+                Uri downloadFileUri = manager.getUriForDownloadedFile(downloadId);
+                installAPK(context, downloadFileUri);
+            }
         }
     }
 

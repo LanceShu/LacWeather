@@ -102,6 +102,8 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
                 requestWeather(mWeatherId)
             }
         })
+        val intent = Intent(this@WeatherActivity, AutoUpdateService::class.java)
+        startService(intent)
     }
 
     private fun registerBroadRecevier() {
@@ -180,7 +182,7 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
     /*处理并展示Weather实体类中的数据*/
     @SuppressLint("SetTextI18n")
     private fun showWeatehrInfo(weather: Weather) {
-        if(weather != null && weather.status.equals("ok")){
+        if(weather.status.equals("ok")){
             if (isVisiableToNavAddBtn(mWeatherId)) {
                 nav_add_care.visibility = View.VISIBLE
             } else {
@@ -237,9 +239,6 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
             car_wash_text.text = carWash
             sport_text.text = sport
             weatherLayout!!.visibility = View.VISIBLE
-
-            val intent = Intent(this@WeatherActivity,AutoUpdateService::class.java)
-            startService(intent)
         }else{
             Toast.makeText(this@WeatherActivity,"获取天气信息失败",Toast.LENGTH_SHORT).show()
         }

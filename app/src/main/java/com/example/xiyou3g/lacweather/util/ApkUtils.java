@@ -65,6 +65,7 @@ public class ApkUtils {
             request.setDestinationInExternalPublicDir(Environment.getExternalStorageDirectory().getAbsolutePath() + "/lacweather/",
                     "lacweather.apk");
             long apkId = downloadManager.enqueue(request);
+            // android 6.0以后需要扫描内存卡中的apk文件进行安装，apkID用于匹配；
             SharedPreferences manager = PreferenceManager.getDefaultSharedPreferences(context);
             SharedPreferences.Editor editor = manager.edit();
             editor.putLong("apk_id", apkId);

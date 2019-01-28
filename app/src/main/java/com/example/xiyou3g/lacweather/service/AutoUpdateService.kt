@@ -31,11 +31,11 @@ class AutoUpdateService: Service(){
         updateBingPic()
         val manager: AlarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val anHour = 8 * 60 * 60 * 1000
-        val triggerAttime = SystemClock.elapsedRealtime()+anHour
-        val i = Intent(this,AutoUpdateService::class.java)
-        val pi = PendingIntent.getService(this,0,i,0)
+        val triggerAttime = SystemClock.elapsedRealtime() + anHour
+        val i = Intent(this, AutoUpdateService::class.java)
+        val pi = PendingIntent.getService(this, 0, i, 0)
         manager.cancel(pi)
-        manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP,triggerAttime,pi)
+        manager.set(AlarmManager.ELAPSED_REALTIME_WAKEUP, triggerAttime, pi)
         return super.onStartCommand(intent, flags, startId)
     }
 
@@ -56,9 +56,9 @@ class AutoUpdateService: Service(){
                     val responseText = response!!.body()?.string()
                     LogUtil.e("autoserviceresponse", responseText!!)
                     val weather = Utility.handleWeatherResponse(responseText)
-                    if(weather != null && "ok".equals(weather.status)){
+                    if("ok" == weather!!.status){
                         val editor = PreferenceManager.getDefaultSharedPreferences(this@AutoUpdateService).edit()
-                        editor.putString("weather",responseText)
+                        editor.putString("weather", responseText)
                         editor.apply()
                     }
                 }
