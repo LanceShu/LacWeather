@@ -70,12 +70,15 @@ public class GetLocalCityAsyncTask extends AsyncTask<Void, Void, String> {
         try {
             Response response = client.newCall(request).execute();
             String resp = response.body().string();
+            LogUtil.INSTANCE.e(TAG, resp);
             JSONObject respJson = new JSONObject(resp);
             JSONObject contentJson = respJson.getJSONObject("content");
             JSONObject addressJson = contentJson.getJSONObject("address_detail");
             String province = addressJson.getString("province");
             String city = addressJson.getString("city");
-            sb.append(city.substring(0, city.length() - 1));
+            if (city.length() > 0) {
+                sb.append(city.substring(0, city.length() - 1));
+            }
         } catch (IOException | JSONException e) {
             e.printStackTrace();
         }
@@ -89,10 +92,12 @@ public class GetLocalCityAsyncTask extends AsyncTask<Void, Void, String> {
             ImageView iconImage = im.get();
             TextView nameView = tv.get();
             GifImageView gifView = gfv.get();
-            gifView.setVisibility(View.GONE);
-            iconImage.setVisibility(View.VISIBLE);
-            nameView.setVisibility(View.VISIBLE);
-            nameView.setText(string);
+            if (string.length() > 0) {
+                gifView.setVisibility(View.GONE);
+                iconImage.setVisibility(View.VISIBLE);
+                nameView.setVisibility(View.VISIBLE);
+                nameView.setText(string);
+            }
         }
         if (localIv != null) {
             ImageView localIcon = localIv.get();

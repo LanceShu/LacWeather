@@ -161,7 +161,7 @@ public class AboutFragment extends Fragment implements View.OnClickListener {
         private void showAlertDialog(final Context context) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
             alertDialog.setTitle(ResourceUitls.getStringById(context, R.string.dialog_title));
-            alertDialog.setMessage("是否立即更新?");
+            alertDialog.setMessage("有新版本，是否立即更新?");
             alertDialog.setPositiveButton("立即更新", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {

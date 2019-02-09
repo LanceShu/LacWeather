@@ -365,14 +365,15 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
     private fun getLocalCityWeatehrInfor() {
         weatherLayout!!.visibility = View.INVISIBLE
         swipeRefresh!!.isRefreshing = true
-        GetLocalCityWeatherAsyncTask(this).execute()
+        GetLocalCityWeatherAsyncTask(this).execute(mWeatherId)
     }
 
     // 获取我的城市的天气信息；
-    class GetLocalCityWeatherAsyncTask() : AsyncTask<Void, Void, String>() {
+    class GetLocalCityWeatherAsyncTask() : AsyncTask<String, Void, String>() {
         private val url = "https://api.map.baidu.com/location/ip?ak=MIKZkVGGXad6Y2FBaNQUISHSwN9trsol"
         private val TAG = "GetLocalCityWeatherAsyncTask"
         private var wa: WeakReference<WeatherActivity>? = null
+        private var preId: String = ""
 
         constructor(activity: WeatherActivity): this() {
             wa = WeakReference(activity)
@@ -382,7 +383,8 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
             super.onPreExecute()
         }
 
-        override fun doInBackground(vararg params: Void?): String {
+        override fun doInBackground(vararg params: String?): String {
+            preId = params[0].toString()
             val client = OkHttpClient.Builder()
                     .connectTimeout(3, TimeUnit.SECONDS)
                     .build()
@@ -400,10 +402,12 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
                 val province = addressJson.getString("province")
                 val city = addressJson.getString("city")
                 LogUtil.e(TAG, province + city)
-                sb.append(city.substring(0, city.length - 1))
-                for (countyBean in MainActivity.countyBeanList) {
-                    if (countyBean.countyName == sb.toString()) {
-                        result = countyBean.weatherId
+                if (city.isNotEmpty()) {
+                    sb.append(city.substring(0, city.length - 1))
+                    for (countyBean in MainActivity.countyBeanList) {
+                        if (countyBean.countyName == sb.toString()) {
+                            result = countyBean.weatherId
+                        }
                     }
                 }
             } catch (e: IOException) {
@@ -421,7 +425,8 @@ class WeatherActivity: AppCompatActivity(), View.OnClickListener{
                 if (result != "") {
                     activity!!.requestWeather(result)
                 } else {
-                    Toast.makeText(activity, R.string.find_error_toast, Toast.LENGTH_SHORT).show()
+                    activity!!.requestWeather(preId)
+                    Toast.makeText(activity, R.string.find_local_error_toast, Toast.LENGTH_SHORT).show()
                 }
             }
         }
